@@ -107,7 +107,7 @@
                     Name = "Зимна купа",
                     Type = TournamentType.RoundRobin,
                     StartDate = new DateTime(2025, 12, 5),
-                    IsOpenForApplications = true
+                    IsOpenForApplications = false
                 },
                 new Tournament
                 {
