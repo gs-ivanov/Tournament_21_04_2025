@@ -26,11 +26,11 @@
             // Без ключ за Ranking (временно)
             builder.Entity<Ranking>().HasNoKey();
 
-            builder.Entity<Team>()
-                .HasOne(t => t.Tournament)
-                .WithMany(t => t.Teams)
-                .HasForeignKey(t => t.TournamentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Team>()
+            //    .HasOne(t => t.Tournament)
+            //    .WithMany(t => t.Teams)
+            //    .HasForeignKey(t => t.TournamentId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
 
             builder.Entity<Team>()
@@ -52,11 +52,11 @@
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Match → Tournament
-            builder.Entity<Match>()
-                .HasOne(m => m.Tournament)
-                .WithMany(t => t.Matches)
-                .HasForeignKey(m => m.TournamentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Match>()
+            //    .HasOne(m => m.Tournament)
+            //    .WithMany(t => t.Matches)
+            //    .HasForeignKey(m => m.TournamentId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // ManagerRequest → Team
             builder.Entity<ManagerRequest>()
@@ -76,56 +76,6 @@
             builder.Entity<Tournament>()
                 .Property(t => t.Type)
                 .HasConversion<int>();
-
-            builder.Entity<Tournament>()
-                .HasMany(t => t.Teams)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            // Seed данни
-            builder.Entity<Tournament>().HasData(
-                new Tournament
-                {
-                    Id = 1,
-                    Name = "Пролетен турнир",
-                    Type = TournamentType.Knockout,
-                    StartDate = new DateTime(2025, 5, 10),
-                    IsOpenForApplications = false
-                },
-                new Tournament
-                {
-                    Id = 2,
-                    Name = "Летен шампионат",
-                    Type = TournamentType.DoubleElimination,
-                    StartDate = new DateTime(2025, 7, 1),
-                    IsOpenForApplications = false
-                },
-                new Tournament
-                {
-                    Id = 3,
-                    Name = "Зимна купа",
-                    Type = TournamentType.RoundRobin,
-                    StartDate = new DateTime(2025, 12, 5),
-                    IsOpenForApplications = false
-                },
-                new Tournament
-                {
-                    Id = 4,
-                    Name = "Есена купа",
-                    Type = TournamentType.GroupAndKnockout,
-                    StartDate = new DateTime(2025, 09, 5),
-                    IsOpenForApplications = false
-                },
-                new Tournament
-                {
-                    Id = 5,
-                    Name = "Шведска купа",
-                    Type = TournamentType.Swiss,
-                    StartDate = new DateTime(2025, 11, 5),
-                    IsOpenForApplications = false
-                }
-            );
         }
     }
 }

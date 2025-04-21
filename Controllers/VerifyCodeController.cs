@@ -62,97 +62,97 @@
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EnterCode(string email, string receiptNumber)
-        {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(receiptNumber))
-            {
-                TempData["Error"] = "Моля, попълнете всички полета.";
-                return View();
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EnterCode(string email, string receiptNumber)
+        ////{
+        ////    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(receiptNumber))
+        ////    {
+        ////        TempData["Error"] = "Моля, попълнете всички полета.";
+        ////        return View();
+        ////    }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+        ////    var user = await _context.Users
+        ////        .FirstOrDefaultAsync(u => u.Email == email);
 
-            if (user == null)
-            {
-                TempData["Error"] = "Невалиден имейл.";
-                return View();
-            }
+        ////    if (user == null)
+        ////    {
+        ////        TempData["Error"] = "Невалиден имейл.";
+        ////        return View();
+        ////    }
 
-            var request = await _context.ManagerRequests
-                .Include(r => r.Team)
-                .FirstOrDefaultAsync(r => r.User.Email == email && !r.IsApproved);
+        ////    var request = await _context.ManagerRequests
+        ////        .Include(r => r.Team)
+        ////        .FirstOrDefaultAsync(r => r.User.Email == email && !r.IsApproved);
 
-            if (request == null)
-            {
-                TempData["Error"] = "Няма чакаща заявка за този имейл.";
-                return RedirectToAction("EnterCode");
-            }
+        ////    if (request == null)
+        ////    {
+        ////        TempData["Error"] = "Няма чакаща заявка за този имейл.";
+        ////        return RedirectToAction("EnterCode");
+        ////    }
 
-            // Потвърждаваме заявката
-            request.IsApproved = true;
-            request.FeePaid = true;
+        ////    // Потвърждаваме заявката
+        ////    request.IsApproved = true;
+        ////    request.FeePaid = true;
 
-            // Добавяме отбора към турнира, ако още не е
-            var tournament = await _context.Tournaments
-                .Include(t => t.Teams)
-                .FirstOrDefaultAsync(t => t.Id == request.TournamentId);
+        ////    // Добавяме отбора към турнира, ако още не е
+        ////    var tournament = await _context.Tournaments
+        ////        //.Include(t => t.Teams)
+        ////        .FirstOrDefaultAsync(t => t.Id == request.TournamentId);
 
-            if (tournament != null && !tournament.Teams.Any(t => t.Id == request.TeamId))
-            {
-                var team = await _context.Teams.FindAsync(request.TeamId);
-                if (team != null)
-                {
-                    tournament.Teams.Add(team);
-                }
-            }
+        ////    if (tournament != null && !tournament.Teams.Any(t => t.Id == request.TeamId))
+        ////    {
+        ////        var team = await _context.Teams.FindAsync(request.TeamId);
+        ////        if (team != null)
+        ////        {
+        ////            tournament.Teams.Add(team);
+        ////        }
+        ////    }
 
-            // Записваме промените
-            await _context.SaveChangesAsync();
+        ////    // Записваме промените
+        ////    await _context.SaveChangesAsync();
 
-            // ✅ Проверка за точно 4 отбора, свързани с турнира
-            if (tournament.Teams.Count == 4 || tournament.Teams.Count % 2 == 0)
-            {
-                TempData["Message"] = $"Можеш да генерираш график с {tournament.Teams.Count} отбора. Логвай се като админ и от падащо меню инициирай генерирането.";
-            }
-            var message = $"✅ Номера на вносната бележка за превод по IBAN: BG00XXXX00000000000000 е приета.\nДобре дошъл и успешно представяне!";
-            TempData["Message"] = message;
+        ////    // ✅ Проверка за точно 4 отбора, свързани с турнира
+        ////    if (tournament.Teams.Count == 4 || tournament.Teams.Count % 2 == 0)
+        ////    {
+        ////        TempData["Message"] = $"Можеш да генерираш график с {tournament.Teams.Count} отбора. Логвай се като админ и от падащо меню инициирай генерирането.";
+        ////    }
+        ////    var message = $"✅ Номера на вносната бележка за превод по IBAN: BG00XXXX00000000000000 е приета.\nДобре дошъл и успешно представяне!";
+        ////    TempData["Message"] = message;
 
-            return RedirectToAction("Index", "Home");
+        ////    return RedirectToAction("Index", "Home");
 
-            //// Изпращаме SMS
-            //await _smsSender.SendSmsAsync("+359885773102", $"✅ Отборът {request.Team.Name} е включен в турнира {tournament.Name}.");
+        ////    //// Изпращаме SMS
+        ////    //await _smsSender.SendSmsAsync("+359885773102", $"✅ Отборът {request.Team.Name} е включен в турнира {tournament.Name}.");
 
-        }
+        //}
 
-        [HttpGet]
-        public IActionResult TestSms()
-        {
-            try
-            {
-                TwilioClient.Init(_twilioSettings.AccountSid, _twilioSettings.AuthToken);
+        //[HttpGet]
+        //public IActionResult TestSms()
+        //{
+        //    //try
+        //    //{
+        //    //    TwilioClient.Init(_twilioSettings.AccountSid, _twilioSettings.AuthToken);
 
-                var message = MessageResource.Create(
-                    body: "Hello World from Tournament (test mode)",
-                    from: new PhoneNumber(_twilioSettings.FromNumber),
-                    to: new PhoneNumber("+15005550006") // test recipient (Twilio test only)
-                );
+        //    //    var message = MessageResource.Create(
+        //    //        body: "Hello World from Tournament (test mode)",
+        //    //        from: new PhoneNumber(_twilioSettings.FromNumber),
+        //    //        to: new PhoneNumber("+15005550006") // test recipient (Twilio test only)
+        //    //    );
 
-                return Content($"✅ Тестово SMS съобщение изпратено! SID: {message.Sid}, Status: {message.Status}");
-            }
-            catch (Exception ex)
-            {
-                return Content($"❌ Грешка: {ex.Message}");
-            }
-        }
+        //    //    return Content($"✅ Тестово SMS съобщение изпратено! SID: {message.Sid}, Status: {message.Status}");
+        //    //}
+        //    //catch (Exception ex)
+        //    //{
+        //    //    return Content($"❌ Грешка: {ex.Message}");
+        //    //}
+        //}
 
-        [HttpGet]
-        public IActionResult CheckTwilioConfig()
-        {
-            return Content($"SID: {_twilioSettings.AccountSid}, Token: {_twilioSettings.AuthToken}, From: {_twilioSettings.FromNumber}");
-        }
+        //[HttpGet]
+        //public IActionResult CheckTwilioConfig()
+        ////{
+        ////    return Content($"SID: {_twilioSettings.AccountSid}, Token: {_twilioSettings.AuthToken}, From: {_twilioSettings.FromNumber}");
+        ////}
 
 
     }

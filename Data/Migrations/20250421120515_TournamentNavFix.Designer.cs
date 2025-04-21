@@ -10,8 +10,8 @@ using Tournament.Data;
 namespace Tournament.Data.Migrations
 {
     [DbContext(typeof(TurnirDbContext))]
-    [Migration("20250415194520_AddIsActiveToTournamentModel")]
-    partial class AddIsActiveToTournamentModel
+    [Migration("20250421120515_TournamentNavFix")]
+    partial class TournamentNavFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -181,31 +181,6 @@ namespace Tournament.Data.Migrations
                     b.ToTable("MatchSubscriptions");
                 });
 
-            modelBuilder.Entity("Tournament.Data.Models.Manager", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TournamentType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Managers");
-                });
-
             modelBuilder.Entity("Tournament.Data.Models.ManagerRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -341,17 +316,12 @@ namespace Tournament.Data.Migrations
                     b.Property<int?>("TournamentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TournamentId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TournamentId");
-
-                    b.HasIndex("TournamentId1");
 
                     b.HasIndex("UserId");
 
@@ -384,53 +354,6 @@ namespace Tournament.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tournaments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsActive = false,
-                            IsOpenForApplications = false,
-                            Name = "Пролетен турнир",
-                            StartDate = new DateTime(2025, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IsActive = false,
-                            IsOpenForApplications = false,
-                            Name = "Летен шампионат",
-                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IsActive = false,
-                            IsOpenForApplications = true,
-                            Name = "Зимна купа",
-                            StartDate = new DateTime(2025, 12, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            IsActive = false,
-                            IsOpenForApplications = false,
-                            Name = "Есена купа",
-                            StartDate = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            IsActive = false,
-                            IsOpenForApplications = false,
-                            Name = "Шведска купа",
-                            StartDate = new DateTime(2025, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Type = 4
-                        });
                 });
 
             modelBuilder.Entity("Tournament.Data.Models.User", b =>
@@ -455,9 +378,6 @@ namespace Tournament.Data.Migrations
                     b.Property<string>("FullName")
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
-
-                    b.Property<bool>("IsManager")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -503,38 +423,6 @@ namespace Tournament.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("Tournament.Models.Teams.TeamViewModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CoachName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FeePaid")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LogoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ManagerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ManagerId");
-
-                    b.ToTable("TeamViewModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -605,17 +493,6 @@ namespace Tournament.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Tournament.Data.Models.Manager", b =>
-                {
-                    b.HasOne("Tournament.Data.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Tournament.Data.Models.ManagerRequest", b =>
                 {
                     b.HasOne("Tournament.Data.Models.Team", "Team")
@@ -662,9 +539,9 @@ namespace Tournament.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Tournament.Data.Models.Tournament", "Tournament")
-                        .WithMany("Matches")
+                        .WithMany()
                         .HasForeignKey("TournamentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TeamA");
@@ -676,14 +553,9 @@ namespace Tournament.Data.Migrations
 
             modelBuilder.Entity("Tournament.Data.Models.Team", b =>
                 {
-                    b.HasOne("Tournament.Data.Models.Tournament", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("TournamentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Tournament.Data.Models.Tournament", "Tournament")
                         .WithMany()
-                        .HasForeignKey("TournamentId1");
+                        .HasForeignKey("TournamentId");
 
                     b.HasOne("Tournament.Data.Models.User", "User")
                         .WithMany()
@@ -694,18 +566,6 @@ namespace Tournament.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Tournament.Models.Teams.TeamViewModel", b =>
-                {
-                    b.HasOne("Tournament.Data.Models.Manager", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("ManagerId");
-                });
-
-            modelBuilder.Entity("Tournament.Data.Models.Manager", b =>
-                {
-                    b.Navigation("Teams");
-                });
-
             modelBuilder.Entity("Tournament.Data.Models.Team", b =>
                 {
                     b.Navigation("ManagerRequests");
@@ -713,13 +573,6 @@ namespace Tournament.Data.Migrations
                     b.Navigation("MatchesAsTeamA");
 
                     b.Navigation("MatchesAsTeamB");
-                });
-
-            modelBuilder.Entity("Tournament.Data.Models.Tournament", b =>
-                {
-                    b.Navigation("Matches");
-
-                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }

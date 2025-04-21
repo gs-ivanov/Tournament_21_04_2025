@@ -26,9 +26,5 @@
 
         public bool IsActive { get; set; } // 🆕 Добавяме това
 
-        public ICollection<Match> Matches { get; set; } = new List<Match>();
-
-        public ICollection<Team> Teams { get; set; } = new List<Team>();
-
     }
 }
