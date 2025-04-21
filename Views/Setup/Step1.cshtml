@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Стъпка 1: Зануляване";
+}
+
+<h2>Стъпка 1: Зануляване на системата</h2>
+
+<div class="alert alert-warning">
+    <strong>Внимание:</strong> Това действие ще:
+    <ul>
+        <li>❌ Изтрие всички мачове от базата</li>
+        <li>🔁 Занули всички турнири (IsActive = false, IsOpenForApplications = false)</li>
+    </ul>
+    Това е необратимо. Желаете ли да продължите?
+</div>
+
+<form asp-action="Step1Confirmed" method="post">
+    <button type="submit" class="btn btn-danger">Да, занули системата</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary ms-2">Отказ</a>
+</form>

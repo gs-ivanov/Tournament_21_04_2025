@@ -1,0 +1,35 @@
+﻿@using Tournament.Data.Models
+@{
+    ViewData["Title"] = "Стъпка 4: Генериране на график";
+    var teams = ViewBag.Teams as List<Team>;
+}
+
+<h2>Стъпка 4: Генериране на график</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
+@if (teams != null && teams.Count >= 4)
+{
+    <p>Одобрени отбори:</p>
+    <ul>
+        @foreach (var team in teams)
+        {
+            <li>@team.Name</li>
+        }
+    </ul>
+
+    <form asp-action="GenerateSchedule" method="post">
+        <button type="submit" class="btn btn-success">Генерирай график</button>
+        <a asp-action="Step3" class="btn btn-secondary ms-2">Назад</a>
+    </form>
+}
+else
+{
+    <button type="submit" class="btn btn-success">Генерирай график</button>
+
+    <div class="alert alert-warning">❗ Трябва да има поне 4 одобрени отбора за да се генерира график.</div>
+    <a asp-action="Step3" class="btn btn-secondary">Назад</a>
+}

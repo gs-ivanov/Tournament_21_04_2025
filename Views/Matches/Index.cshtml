@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Match>
+@using static Tournament.WebConstants
+
+<h2>График на мачовете</h2>
+
+<h5 class="text-black-10 text-center table-warning"> @TempData[GlobalMessageKey]</h5>
+
+<table class="table table-bordered table-striped text-center">
+    <thead class="table-dark">
+        <tr>
+            <th>Дата</th>
+            <th>Домакин</th>
+            <th>Резултат</th>
+            <th>Гост</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int round = 1;
+            DateTime? lastDate = null;
+        }
+
+        @foreach (var match in Model.OrderBy(m => m.PlayedOn))
+        {
+            if (lastDate == null || match.PlayedOn != lastDate)
+            {
+                <tr class="table-light fw-bold">
+                    <td colspan="5">Кръг @round – @match.PlayedOn?.ToString("dd.MM.yyyy")</td>
+                </tr>
+                round++;
+                lastDate = match.PlayedOn;
+            }
+
+            <tr>
+                <td>@match.PlayedOn?.ToString("dd.MM.yyyy")</td>
+                <td>@match.TeamA?.Name</td>
+                <td>@match.ScoreA : @match.ScoreB</td>
+                <td>@match.TeamB?.Name</td>
+                <td>
+                    @if (User.IsInRole("Editor") && match.ScoreA==null&& match.ScoreB ==null)
+                    {
+                        <a asp-action="Edit" asp-route-id="@match.Id" class="btn btn-warning btn-sm">Редактирай</a>
+                    }
+                </td>
+            </tr>
+         }
+    </tbody>
+</table>

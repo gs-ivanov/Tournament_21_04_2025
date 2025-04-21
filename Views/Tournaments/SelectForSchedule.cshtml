@@ -1,0 +1,23 @@
+
+@{
+    ViewData["Title"] = "Избор на турнир";
+}
+
+<h2>Избери турнир за генериране на график</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<form asp-action="GenerateSchedule" method="post">
+    <div class="mb-3">
+        <label for="tournamentId" class="form-label">Турнир</label>
+        <select asp-items="ViewBag.Tournaments" class="form-select" name="tournamentId" required></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Генерирай график</button>
+</form>

@@ -1,0 +1,46 @@
+﻿@using Tournament.Data.Models
+@model Match
+@{
+    ViewData["Title"] = "Редакция на резултат";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group mb-3">
+                <label>Домакин:</label>
+                <span class="form-control-plaintext fw-bold">@Model.TeamA?.Name</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Гост:</label>
+                <span class="form-control-plaintext fw-bold">@Model.TeamB?.Name</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ScoreA" class="control-label">Голове (домакин)</label>
+                <input asp-for="ScoreA" class="form-control" type="number" min="0" required />
+                <span asp-validation-for="ScoreA" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ScoreB" class="control-label">Голове (гост)</label>
+                <input asp-for="ScoreB" class="form-control" type="number" min="0" required />
+                <span asp-validation-for="ScoreB" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Запиши резултат</button>
+            <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

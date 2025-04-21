@@ -1,0 +1,27 @@
+﻿@model ManagerRequest
+
+@{
+    ViewData["Title"] = "Удостоверение за участие";
+    var team = Model.Team;
+    var manager = Model.User;
+}
+
+<div class="container mt-5 border rounded p-4 bg-white shadow-sm">
+    <h2 class="text-center text-success">Удостоверение за участие</h2>
+    <hr />
+
+    <p><strong>Отбор:</strong> @team.Name</p>
+    <p><strong>Треньор:</strong> @team.CoachName</p>
+    <p><strong>Тип турнир:</strong> @Model.TournamentType</p>
+    <p><strong>Мениджър:</strong> @manager.FullName (@manager.Email)</p>
+    <p><strong>Дата на одобрение:</strong> @Model.CreatedOn.ToString("dd.MM.yyyy HH:mm")</p>
+    <p><strong>Такса участие:</strong> <span class="text-success">Платена ✅</span></p>
+
+    <div class="mt-4">
+        <p class="text-muted">Това удостоверение потвърждава участието на отбора в избрания турнир. Издадено автоматично от Tournament платформата.</p>
+    </div>
+
+    <div class="text-end">
+        <button class="btn btn-outline-secondary" onclick="window.print()">🖨️ Принтирай</button>
+    </div>
+</div>

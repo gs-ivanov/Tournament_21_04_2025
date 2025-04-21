@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Match>
+
+@{
+    ViewData["Title"] = "Потвърди нов график";
+}
+
+<h2>Съществуващ график</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Домакин</th>
+            <th>Резултат</th>
+            <th>Гост</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var match in Model)
+        {
+            <tr>
+                <td>@match.PlayedOn?.ToString("dd.MM.yyyy")</td>
+                <td>@match.TeamA?.Name</td>
+                <td>@match.ScoreA : @match.ScoreB</td>
+                <td>@match.TeamB?.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<form asp-action="GenerateNewSchedule" method="post">
+    <input type="hidden" name="id" value="@ViewBag.TournamentId" />
+    <button type="submit" class="btn btn-danger">Изтрий и генерирай нов график</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary ms-2">Назад (откажи)</a>
+</form>

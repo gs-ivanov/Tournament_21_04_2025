@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Стъпка 3: Мениджърски регистрации";
+    int approved = (int)ViewBag.ApprovedCount;
+    bool ready = approved >= 4 && approved % 2 == 0; // 🔁 Ново условие
+}
+
+<h2>Стъпка 3: Мениджърски регистрации</h2>
+
+<div class="alert alert-info">
+    <p>Турнирът е отворен за регистрации. Изчакайте 4 отбора да бъдат одобрени за участие.</p>
+    <p>✅ Одобрени до момента: <strong>@approved</strong> / 4</p>
+</div>
+
+@*<button type="submit" class="btn btn-success" @(ready ? "" : "disabled")>*@
+@if (ready)
+{
+    <form method="get" asp-action="Step4">
+        <button type="submit" class="btn btn-success">
+            Продължи към генериране на график
+        </button>
+        <a asp-action="Step2" class="btn btn-secondary ms-2">Назад</a>
+    </form>
+}
+else
+{
+    TempData["Step3"] = "9999";
+    <form method="get" asp-action="Index" asp-controller="Home">
+        <button type="submit" class="btn btn-success">
+            Продължи към добавяне на още заявки, като се регистрираш като Мениджар
+        </button>
+        <a asp-action="Step2" class="btn btn-secondary ms-2">Назад</a>
+    </form>
+}
+
+@if (!ready)
+{
+    <div class="text-muted mt-2">❗ Бутонът ще стане активен, когато има поне 4 одобрени заявки.</div>
+}

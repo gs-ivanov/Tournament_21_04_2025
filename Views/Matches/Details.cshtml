@@ -1,0 +1,73 @@
+﻿@model MatchViewModel
+
+@{
+    ViewData["Title"] = "Детайли за мач";
+}
+
+<h2 class="mt-3">Детайли за мач</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
+<div class="card p-4 shadow-sm bg-light">
+    <dl class="row">
+        <dt class="col-sm-3">Отбор A</dt>
+        <dd class="col-sm-9">@Model.TeamA</dd>
+
+        <dt class="col-sm-3">Отбор B</dt>
+        <dd class="col-sm-9">@Model.TeamB</dd>
+
+        <dt class="col-sm-3">Дата</dt>
+        <dd class="col-sm-9">@Model.PlayedOn.ToString("dd.MM.yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Резултат</dt>
+        <dd class="col-sm-9">
+            @if (Model.ScoreA.HasValue && Model.ScoreB.HasValue)
+            {
+                <strong>@Model.ScoreA - @Model.ScoreB</strong>
+            }
+            else
+            {
+                <span class="text-muted">Предстои</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+@*@if (User.Identity.IsAuthenticated)*@
+    @if (!(User.IsInRole("Administrator")||User.IsInRole("Editor")) && User.Identity.IsAuthenticated)
+    {
+        <h4 class="mt-4">Абонирай се за резултата от този мач</h4>
+
+        <form asp-controller="MatchSubscriptions" asp-action="Subscribe" method="post">
+            <input type="hidden" name="matchId" value="@Model.Id" />
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="emailOption" value="Email" checked>
+                <label class="form-check-label" for="emailOption">
+                    Имейл
+                </label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="type" id="smsOption" value="Sms">
+                <label class="form-check-label" for="smsOption">
+                    SMS
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary">Абонирай се</button>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            За да се абонирате, моля влезте в системата като Фен.
+            @*За да се абонирате, моля <a asp-controller="Account" asp-action="Login">влезте в системата като Фен.</a>.
+                                     <a asp-page="Login" asp-route-returnUrl="/">Register as a new user</a>*@
+        </div>
+    }
+
+
+<a asp-action="Index" class="btn btn-secondary">Назад</a>

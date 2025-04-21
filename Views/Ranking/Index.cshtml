@@ -1,0 +1,39 @@
+﻿@model IEnumerable<TeamRankingViewModel>
+
+@{
+    ViewData["Title"] = "Класиране";
+}
+
+<h2 class="mt-3">Класиране</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Отбор</th>
+            <th>Мачове</th>
+            <th>Победи</th>
+            <th>Равенства</th>
+            <th>Загуби</th>
+            <th>Точки</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var position = 1;
+        }
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>@position</td>
+                <td>@team.TeamName</td>
+                <td>@team.MatchesPlayed</td>
+                <td>@team.Wins</td>
+                <td>@team.Draws</td>
+                <td>@team.Losses</td>
+                <td><strong>@team.Points</strong></td>
+            </tr>
+            position++;
+        }
+    </tbody>
+</table>

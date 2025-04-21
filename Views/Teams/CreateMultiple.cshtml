@@ -1,0 +1,28 @@
+﻿@model TeamFormModel
+
+@{
+    ViewData["Title"] = "Създай няколко отбора";
+}
+
+<h2 class="mt-3">Създай няколко отбора</h2>
+
+<form asp-action="CreateMultiple" method="post" class="mt-4">
+    <div class="form-group mb-3">
+        <label asp-for="TeamCount" class="form-label"></label>
+        <select asp-for="TeamCount" class="form-select">
+            <option value="">-- Избери брой --</option>
+            @for (int i = 1; i <= 16; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+        <span asp-validation-for="TeamCount" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Генерирай отбори</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

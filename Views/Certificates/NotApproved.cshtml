@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Няма достъп до удостоверение";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-warning">
+        <h4 class="alert-heading">⛔ Удостоверение недостъпно</h4>
+        <p>Вашата заявка все още не е одобрена или таксата за участие не е платена.</p>
+        <hr>
+        <p class="mb-0">След одобрение от администратор ще можете да получите удостоверение.</p>
+    </div>
+    <a asp-controller="MyRequests" asp-action="Index" class="btn btn-outline-primary">⬅ Назад към моите заявки</a>
+</div>

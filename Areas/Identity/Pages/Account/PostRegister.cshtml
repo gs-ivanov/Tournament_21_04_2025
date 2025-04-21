@@ -1,0 +1,21 @@
+﻿@page
+@model PostRegisterModel
+@{
+    ViewData["Title"] = "Заявка за участие";
+}
+
+<h3>Благодарим за регистрацията!</h3>
+
+@if (Model.Request != null)
+{
+<p><strong>Статус на заявката:</strong> @Model.Request.Status</p>
+
+<form method="post" asp-page="/Account/AdminApproval" asp-route-userId="@Model.Request.UserId">
+    <button type="submit" class="btn btn-success">Одобрявам</button>
+    <a asp-page="/Account/Login" class="btn btn-secondary">Отхвърлям</a>
+</form>
+}
+else
+{
+<p>Няма намерена заявка.</p>
+}

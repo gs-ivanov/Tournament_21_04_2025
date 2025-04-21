@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ManagerRequest>
+
+@{
+    ViewData["Title"] = "Моите заявки";
+}
+
+<h2 class="mt-4">@ViewData["Title"]</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Нямате подадени заявки за участие.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Отбор</th>
+                <th>Тип турнир</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Удостоверение</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Team?.Name</td>
+                    <td>@item.TournamentType</td>
+                    <td>@item.CreatedOn.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        @if (item.Status == RequestStatus.Pending)
+                        {
+                            <span class="badge bg-warning text-dark">Чакаща</span>
+                        }
+                        else if (item.Status == RequestStatus.Approved)
+                        {
+                            <span class="badge bg-success">Одобрена</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Отхвърлена</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.Status == RequestStatus.Approved && item.Team?.FeePaid == true)
+                        {
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="Certificates" asp-action="ForTeam" asp-route-teamId="@item.Team.Id">Преглед</a>
+                            <a class="btn btn-outline-secondary btn-sm ms-1" asp-controller="Certificates" asp-action="Download" asp-route-teamId="@item.Team.Id">PDF</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">---</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

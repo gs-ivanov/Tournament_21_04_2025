@@ -1,0 +1,35 @@
+@model Tournament
+
+@{
+    ViewData["Title"] = "Редакция на турнир";
+}
+
+<h2>Редакция на турнир</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Име на турнир</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label">Начална дата</label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+    </div>
+
+    <!-- Един общ toggle бутон за Active + Applications -->
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="switchActiveOpen" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
+        <label class="form-check-label" for="switchActiveOpen">
+            @(Model.IsActive ? "✅ Активен и отворен за заявки" : "⛔️ Неактивен турнир")
+        </label>
+    </div>
+
+    <!-- Hidden поле, за да синхронизираме IsOpenForApplications -->
+    <input type="hidden" name="IsOpenForApplications" value="@(Model.IsActive ? "true" : "false")" />
+
+    <button type="submit" class="btn btn-success">Запиши</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

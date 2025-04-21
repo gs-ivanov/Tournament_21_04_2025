@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Tournament>
+
+<h2>Всички турнири</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Име</th>
+            <th>Тип</th>
+            <th>Начална дата</th>
+            <th>Активен</th>
+            <th>Отворен за заявки</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.Name</td>
+                <td>@t.Type</td>
+                <td>@t.StartDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    @if (t.IsActive)
+                    {
+                        <span class="badge bg-success">Активен</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">–</span>
+                    }
+                </td>
+                <td>
+                    @if (t.IsOpenForApplications)
+                    {
+                        <span class="badge bg-primary">🟢 Отворен</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">🔒 Затворен</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-primary btn-sm">Редактирай</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
