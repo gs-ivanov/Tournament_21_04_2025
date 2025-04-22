@@ -11,7 +11,7 @@
     using Tournament.Data;
     using Tournament.Data.Models;
     using Tournament.Models.Matches;
-    using Tournament.Services.MatchResultNotifire;
+    //using Tournament.Services.MatchResultNotifire;
     using Tournament.Services.MatchScheduler;
 
 
@@ -19,17 +19,16 @@
     {
         private readonly TurnirDbContext _context;
         private readonly IMatchSchedulerService _matchScheduler;
-        private readonly IMatchResultNotifierService _notifier;
+        //private readonly IMatchResultNotifierService _notifier;
 
 
         public MatchesController(
             TurnirDbContext context,
-            IMatchSchedulerService matchScheduler,
-            IMatchResultNotifierService notifier)
+            IMatchSchedulerService matchScheduler)
         {
             this._context = context;
             this._matchScheduler = matchScheduler;
-            this._notifier = notifier;
+            //this._notifier = notifier;
         }
 
         [HttpGet]
@@ -132,8 +131,8 @@
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            if ((String)TempData["NonDisplay"] != "Yes")
-            {
+            //if ((String)TempData["NonDisplay"] != "Yes")
+            //{
                 var now = DateTime.Now;
 
                 var matches = await _context.Matches
@@ -154,12 +153,12 @@
                 await _context.SaveChangesAsync();
 
                 return View(matches);
-            }
-            else
-            {
-                TempData["NoDisplay"] = "Все още няма създаден График?!";
-                return RedirectToAction("Index", "Home");
-            }
+            //}
+            //else
+            //{
+            //    TempData["NoDisplay"] = "Все още няма създаден График?!";
+            //    return RedirectToAction("Index", "Home");
+            //}
 
         }
 

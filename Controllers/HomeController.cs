@@ -19,97 +19,44 @@
             this._context = _context;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            
             var activeTournament = await _context.Tournaments
                 .FirstOrDefaultAsync(t => t.IsActive);
 
-            var isMatches = await _context.Matches
-                .Where(m => m.Id > 0)
-                .FirstOrDefaultAsync();
-
-            if (isMatches!=null && activeTournament!=null)
+            if (activeTournament != null)
             {
-                var matches = await _context.Matches
-                    .Include(m => m.TeamA)
-                    .Include(m => m.TeamB)
-                    .Where(m => m.TournamentId == activeTournament.Id && m.ScoreA != null && m.ScoreB != null)
-                    .ToListAsync();
+                var matchesExist = await _context.Matches
+                    .AnyAsync(m => m.TournamentId == activeTournament.Id);
 
-                var teams = await _context.Teams
-                    .Where(t => t.TournamentId == activeTournament.Id)
-                    .ToListAsync();
-
-                var rankings = teams.Select(team =>
+                if (matchesExist)
                 {
-                    var played = matches
-                        .Where(m => m.TeamAId == team.Id || m.TeamBId == team.Id)
-                        .ToList();
+                    //// Генерирай класиране...
+                    //var rankings = await GenerateRankings(activeTournament.Id);
+                    //return View(rankings);
+                }
+            }
 
-                    int wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0;
+            // Ако няма активен турнир
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["ShowWelcome"] = true;
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
 
-                    foreach (var m in played)
-                    {
-                        int scored = m.TeamAId == team.Id ? m.ScoreA ?? 0 : m.ScoreB ?? 0;
-                        int conceded = m.TeamAId == team.Id ? m.ScoreB ?? 0 : m.ScoreA ?? 0;
-
-                        goalsFor += scored;
-                        goalsAgainst += conceded;
-
-                        if (scored > conceded) wins++;
-                        else if (scored == conceded) draws++;
-                        else losses++;
-                    }
-
-                    return new TeamRankingViewModel
-                    {
-                        TeamName = team.Name,
-                        MatchesPlayed = played.Count,
-                        Wins = wins,
-                        Draws = draws,
-                        Losses = losses,
-                        GoalsFor = goalsFor,
-                        GoalsAgainst = goalsAgainst,
-                        LogoUrl = team.LogoUrl
-                    };
-                })
-                .OrderByDescending(r => r.Points)
-                .ThenByDescending(r => r.GoalDifference)
-                .ToList();
-
-                return View(rankings);
+            if (User.IsInRole("Administrator"))
+            {
+                TempData["Message"] = "Добре дошли, Администратор! Все още няма активен турнир. Създайте нов.";
             }
             else
             {
-                TempData["NonDisplay"] = "Yes";
-                if (User.IsInRole("Administrator"))
-                {
-                    if (TempData["Step3"] != null)
-                    {
-                        TempData["Step3"] =null;
-                        TempData["Message"] = "Има обявен турнир.\nРегестрирай се като Мениджър за участие в него.\nУспех!";
-                        return View();
-
-                    }
-                    else
-                    {
-                        ViewData["ShowWelcome"] = false;
-                        TempData["Message"] = "Welcome Admin. Take your duty, please!";
-                        return View();
-                    }
-                }
-                else
-                {
-                    ViewData["ShowWelcome"] = true;
-                    TempData["Message"] = "Waiting Admin to take his duty, please!";
-
-                    //return RedirectToAction(nameof(Index));
-                    return View();
-                }
+                TempData["Message"] = "В момента няма активен турнир. Моля, върнете се по-късно.";
             }
 
+            return View();
         }
+
 
         [HttpPost]
         public IActionResult Index(string s)

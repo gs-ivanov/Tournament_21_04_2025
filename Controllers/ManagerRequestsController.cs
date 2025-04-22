@@ -23,8 +23,6 @@
         [HttpGet]
         public async Task<IActionResult> Index(string status = "Pending")
         {
-            if ((String)TempData["NonDisplay"] != "Yes")  // Sequre
-            {
                 var query = _context.ManagerRequests
                     .Include(r => r.Team)
                     .Include(r => r.User)
@@ -37,15 +35,6 @@
 
                 ViewData["CurrentStatus"] = status;
                 return View(await query.ToListAsync());
-            }
-            else
-            {
-                TempData["NoDisplay"] = "Все още няма създаден График?!";
-                return RedirectToAction("Index", "Home");
-            }
-
-
-
         }
 
         [HttpPost]

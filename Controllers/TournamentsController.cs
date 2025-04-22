@@ -110,10 +110,7 @@
                 return View("ConfirmScheduleOverwrite", existingMatches);
             }
 
-            //return RedirectToAction("GenerateSchedule", new { tournamentId });
-            return RedirectToAction(nameof(GenerateSchedule));
-
-            //return GenerateSchedule(tournamentId);
+            return RedirectToAction(nameof(GenerateSchedule), new { tournamentId });
         }
 
         [HttpPost]
@@ -123,12 +120,10 @@
             return await GenerateSchedule(id);
         }
 
-
+        [HttpGet]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GenerateSchedule(int tournamentId)
         {
-            //int tournamentId = 3;
-
             var tournament = await _context.Tournaments
                 .FirstOrDefaultAsync(t => t.Id == tournamentId);
 
@@ -137,15 +132,22 @@
                 TempData["Message"] = "❌ Турнирът не беше намерен.";
                 return RedirectToAction("Index", "Home");
             }
+            
+            var pending=await _context.ManagerRequests.CountAsync();
 
             var requests = await _context.ManagerRequests
                 .Include(r => r.Team)
                 .Where(r => r.IsApproved && r.FeePaid && r.TournamentId == tournamentId)
                 .ToListAsync();
 
-            if (requests.Count != 4)
+            if (requests.Count < 4)
             {
-                TempData["Message"] = "❌ Трябват точно 4 отбора с платена такса и одобрение!";
+                TempData["Message"] = "❌ Трябват 4 или повече четно число отбори с платена такса и одобрение!";
+                return RedirectToAction("Index", "Home");
+            }
+            else if (requests.Count ==0 && pending>= 4)
+            {
+                TempData["Message"] = $"❌ Имате {pending} отборa с ne платена такса и одобрение!";
                 return RedirectToAction("Index", "Home");
             }
 
