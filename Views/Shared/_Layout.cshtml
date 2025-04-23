@@ -45,10 +45,12 @@
                                     Админ меню
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                    <li><a class="dropdown-item" asp-controller="SetUp" asp-action="Step1">Setup Wizarf</a></li>
+                                    <li><a class="dropdown-item" asp-controller="SetUp" asp-action="Step1">Setup Wizarf - Ресет и генериране на нов график</a></li>
                                     <li><a class="dropdown-item" asp-controller="Tournaments">Tournaments Edit/List(ToDo - edit)</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Tournaments" asp-action="SelectForSchedule">Generate RoundRobin Matches</a></li>
                                     <li><a class="dropdown-item" asp-controller="Teams" asp-action="CreateMultiple">Създаване на списък с отбори</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Tools" asp-action="Index">🛠️ Админ инструменти</a>
+                                    </li>
                                     <li><a class="dropdown-item" asp-controller="AdminController" asp-action="ResetTeamsAndRequests">Reset Teams and ManagerRequests items: FeePaid, Status, IsApproved and FeePaid</a></li>
                                     <li><a class="dropdown-item" asp-controller="Matches" asp-action="Index">Spare</a></li>
                                 </ul>

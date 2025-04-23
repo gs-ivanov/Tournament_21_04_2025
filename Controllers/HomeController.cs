@@ -39,7 +39,7 @@
                     .ToListAsync();
 
                 var teams = await _context.Teams
-                    .Where(t => t.TournamentId == activeTournament.Id)
+                    .Where(t => t.FeePaid==true)
                     .ToListAsync();
 
                 var rankings = teams.Select(team =>
