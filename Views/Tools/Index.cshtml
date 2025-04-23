@@ -10,6 +10,14 @@
     <div class="alert alert-info">@TempData["Message"]</div>
 }
 
+<form asp-action="GenerateSchadel" method="post">
+    <button type="submit" class="btn btn-warning">🔁 Generate турнир:</button>
+</form>
+
+<form asp-action="ResetScheduleAndTournaments" method="post">
+    <button type="submit" class="btn btn-warning">🔁 Таблицата Matches беше изчистена. Обновени турнири:</button>
+</form>
+
 <form asp-action="ResetTeamsAndRequests" method="post">
     <button type="submit" class="btn btn-warning">🔁 Нулирай всички заявки и такси</button>
 </form>
