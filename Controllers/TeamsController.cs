@@ -26,8 +26,6 @@
 
         public async Task<IActionResult> Index()
         {
-            if ((String)TempData["NonDisplay"] != "Yes")
-            {
                 var teams = await _context.Teams
                 .Include(t => t.MatchesAsTeamA)
                 .Include(t => t.MatchesAsTeamB)
@@ -35,12 +33,6 @@
                 .ToListAsync();
 
                 return View(teams);
-            }
-            else
-            {
-                TempData["NoDisplay"] = "Все още няма създаден График?!";
-                return RedirectToAction("Index", "Home");
-            }
         }
 
         [AllowAnonymous]

@@ -152,6 +152,13 @@
 
                 await _context.SaveChangesAsync();
 
+            var tourType = this._context
+                .Tournaments
+                .Where(t=>t.IsActive==true)
+                .Select(t => t.Name)
+                .FirstOrDefault();
+
+            ViewData["TournamentType"] = tourType;
                 return View(matches);
             //}
             //else

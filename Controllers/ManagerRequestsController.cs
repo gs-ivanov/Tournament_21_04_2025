@@ -23,7 +23,7 @@
         [HttpGet]
         public async Task<IActionResult> Index(string status = "Pending")
         {
-                var query = _context.ManagerRequests
+            var query = _context.ManagerRequests
                     .Include(r => r.Team)
                     .Include(r => r.User)
                     .AsQueryable();
@@ -34,7 +34,7 @@
                 }
 
                 ViewData["CurrentStatus"] = status;
-                return View(await query.ToListAsync());
+            return View(await query.ToListAsync());
         }
 
         [HttpPost]
@@ -50,7 +50,9 @@
                 return NotFound();
 
             request.Status = RequestStatus.Approved;
-            request.Team.FeePaid = true;
+            //request.Team.FeePaid = true;
+            request.FeePaid = true;
+            request.IsApproved=true;
 
             await _context.SaveChangesAsync();
 

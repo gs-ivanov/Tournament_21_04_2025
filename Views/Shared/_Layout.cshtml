@@ -26,18 +26,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Teams" asp-action="Index">Списък с отборите</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Стани Мениджър</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" asp-controller="VerifyCode" asp-action="EnterCode">Платена такса-участие</a>
+                        </li>
                         @if (User.IsInRole("Editor") && User.Identity.Name.ToLower() != "editor@tur.com")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-warning" asp-controller="VerifyCode" asp-action="EnterCode">Заявки от мениджъри</a>
-                            </li>
-}
+                        }
                         @if (User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-warning" asp-controller="ManagerRequests" asp-action="Index">Заявки за участие в турнир</a>
+                                <a class="nav-link text-warning" asp-controller="ManagerRequests" asp-action="Index">Преглед и редактиране заявките за участие в турнир</a>
                             </li>
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-warning" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Админ меню
@@ -47,11 +49,11 @@
                                     <li><a class="dropdown-item" asp-controller="Tournaments">Tournaments Edit/List(ToDo - edit)</a></li>
                                     <li><a class="dropdown-item" asp-controller="Tournaments" asp-action="SelectForSchedule">Generate RoundRobin Matches</a></li>
                                     <li><a class="dropdown-item" asp-controller="Teams" asp-action="CreateMultiple">Създаване на списък с отбори</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Teams" asp-action="CreateMultiple">Създаване (начално) на отбори</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Matches" asp-action="GenerateKnockoutMatches">Създаване на елиминация</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Matches" asp-action="Reset">Нулиране на турнири</a></li>
+                                    <li><a class="dropdown-item" asp-controller="AdminController" asp-action="ResetTeamsAndRequests">Reset Teams and ManagerRequests items: FeePaid, Status, IsApproved and FeePaid</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Matches" asp-action="Index">Spare</a></li>
                                 </ul>
-                            </li>}
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -59,11 +61,16 @@
         </nav>
     </header>
 
+    @if (TempData["VeriftCode"] != null)
+    {
+        <div class="alert alert-success">@TempData["VeriftCode"]</div>
+        <span class="d-none">@TempData["VeriftCode"]=null</span>
+    }
     @if (TempData["NoDisplay"] != null)
     {
         <div class="alert alert-success">@TempData["NoDisplay"]</div>
-                <span class="d-none">@TempData["NoDisplay"]=null</span>}
-
+        <span class="d-none">@TempData["NoDisplay"]=null</span>
+    }
     @if (TempData["Wizard"] != null)
     {
         <div class="alert alert-success">@TempData["Wizard"]</div>
@@ -90,5 +97,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+@*     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+ *@
 </body>
 </html>

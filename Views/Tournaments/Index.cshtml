@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Tournament>
-
+<div class="alert alert-success">@TempData["data"]</div>
+<span class="d-none">@TempData["data"]=null</span>
 <h2>Всички турнири</h2>
-
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-info">@TempData["Message"]</div>

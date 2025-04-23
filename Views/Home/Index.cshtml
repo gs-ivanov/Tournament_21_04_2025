@@ -1,97 +1,59 @@
 ﻿@model IEnumerable<TeamRankingViewModel>
 
-@{
-    var showWelcome = ViewData["ShowWelcome"] as bool? ?? false;
-}
-
-@*@if (TempData["Message"] != null)
+@if (Model!=null)
 {
-    <div class="alert alert-warning text-center">
-        @TempData["Message"]
-    </div>
-}*@
+    <h3 class="mt-4 text-center">Класиране</h3>
 
-
-@if (showWelcome)
-{
-    <div class="alert alert-primary text-center p-4">
-        <h4>Добре дошли в системата за футболни турнири</h4>
-        <p>Тук можете да:</p>
-        <ul class="list-unstyled">
-            <li>⚽ Следите активни турнири и класиране</li>
-            <li>📅 Генерирате график на мачове</li>
-            <li>🧑‍💼 Регистрирате се като мениджър на отбор</li>
-        </ul>
-        <p>В момента няма активен турнир.</p>
-        <p class="mb-4">Ако сте администратор – можете да се логнете и да създадете нов турнир.</p>
-
-        @*<form asp-area="Identity" asp-page="/Account/Login" method="get">
-                <button type="submit" class="btn btn-outline-primary">
-                    Вход като администратор
-                </button>
-            </form>*@
-
-        <p class="mt-3 text-muted">Ако не сте администратор, моля, посетете сайта отново по-късно.</p>
-    </div>
-}
-else if (!showWelcome)
-{
-
-}
-else
-{
-    @if (Model.Any())
-    {
-        <h3 class="mt-4 text-center">Класиране</h3>
-
-        <table class="table table-hover table-bordered text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>#</th>
-                    <th>Лого</th>
-                    <th>Отбор</th>
-                    <th title="Изиграни мачове">ИМ</th>
-                    <th title="Победи">П</th>
-                    <th title="Равенства">Р</th>
-                    <th title="Загуби">З</th>
-                    <th title="Голова разлика (вкарани минус допуснати)">ГР</th>
-                    <th title="Точки">Т</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int position = 1;
-                }
-                @foreach (var team in Model)
+    <table class="table table-hover table-bordered text-center">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Лого</th>
+                <th>Отбор</th>
+                <th title="Изиграни мачове">ИМ</th>
+                <th title="Победи">П</th>
+                <th title="Равенства">Р</th>
+                <th title="Загуби">З</th>
+                <th title="Голова разлика (вкарани минус допуснати)">ГР</th>
+                <th title="Точки">Т</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int position = 1;
+            }
+            @foreach (var team in Model)
+            {
+                string rowClass = position switch
                 {
-                    string rowClass = position switch
-                    {
-                        1 => "table-warning",
-                        2 => "table-secondary",
-                        3 => "table-orange",
-                        _ => ""
-                    };
-                    <tr class="@rowClass">
-                        <td>@position</td>
-                        <td>
-                            <img src="@team.LogoUrl" alt="лого" width="32" height="32"
-                                 onerror="this.onerror=null; this.src='/logos/default.png';" />
-                        </td>
-                        <td class="text-start" title="Клик за повече информация">@team.TeamName</td>
-                        <td>@team.MatchesPlayed</td>
-                        <td>@team.Wins</td>
-                        <td>@team.Draws</td>
-                        <td>@team.Losses</td>
-                        <td>@(team.GoalDifference >= 0 ? "+" : "")@team.GoalDifference</td>
-                        <td><strong>@team.Points</strong></td>
-                    </tr>
-                    position++;
-                }
-            </tbody>
-        </table>
-    }
-
+                    1 => "table-warning",
+                    2 => "table-secondary",
+                    3 => "table-orange",
+                    _ => ""
+                };
+                <tr class="@rowClass">
+                    <td>@position</td>
+                    <td>
+                        <img src="@team.LogoUrl" alt="лого" width="32" height="32"
+                                onerror="this.onerror=null; this.src='/logos/default.png';" />
+                    </td>
+                    <td class="text-start" title="Клик за повече информация">@team.TeamName</td>
+                    <td>@team.MatchesPlayed</td>
+                    <td>@team.Wins</td>
+                    <td>@team.Draws</td>
+                    <td>@team.Losses</td>
+                    <td>@(team.GoalDifference >= 0 ? "+" : "")@team.GoalDifference</td>
+                    <td><strong>@team.Points</strong></td>
+                </tr>
+                position++;
+            }
+        </tbody>
+    </table>
+}else
+{
+    <h1>Not any matches</h1>
 }
+
 
 
 

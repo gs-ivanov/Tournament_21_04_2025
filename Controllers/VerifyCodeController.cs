@@ -51,7 +51,7 @@
 
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "✅ Кандидат-мениджърът беше отстранен.";
+            TempData["VerifyCode"] = "✅ Кандидат-мениджърът беше отстранен.";
             return RedirectToAction("EnterCode");
         }
 
@@ -62,70 +62,74 @@
             return View();
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> EnterCode(string email, string receiptNumber)
-        ////{
-        ////    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(receiptNumber))
-        ////    {
-        ////        TempData["Error"] = "Моля, попълнете всички полета.";
-        ////        return View();
-        ////    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnterCode(string email, string receiptNumber)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(receiptNumber))
+            {
+                TempData["Error"] = "Моля, попълнете всички полета.";
+                return View();
+            }
 
-        ////    var user = await _context.Users
-        ////        .FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
 
-        ////    if (user == null)
-        ////    {
-        ////        TempData["Error"] = "Невалиден имейл.";
-        ////        return View();
-        ////    }
+            if (user == null)
+            {
+                TempData["Error"] = "Невалиден имейл.";
+                return View();
+            }
 
-        ////    var request = await _context.ManagerRequests
-        ////        .Include(r => r.Team)
-        ////        .FirstOrDefaultAsync(r => r.User.Email == email && !r.IsApproved);
+            var isNotApproved = await _context.ManagerRequests
+                .Include(r => r.Team)
+                .FirstOrDefaultAsync(r => r.User.Email == email && !r.IsApproved);
 
-        ////    if (request == null)
-        ////    {
-        ////        TempData["Error"] = "Няма чакаща заявка за този имейл.";
-        ////        return RedirectToAction("EnterCode");
-        ////    }
+            if (isNotApproved == null)
+            {
+                    TempData["Error"] = "Няма чакаща заявка за този имейл.";
+                    return RedirectToAction("EnterCode");
+            }
 
-        ////    // Потвърждаваме заявката
-        ////    request.IsApproved = true;
-        ////    request.FeePaid = true;
+            // Потвърждаваме заявката
+            isNotApproved.IsApproved = true;
+            isNotApproved.FeePaid = true;
 
-        ////    // Добавяме отбора към турнира, ако още не е
-        ////    var tournament = await _context.Tournaments
-        ////        //.Include(t => t.Teams)
-        ////        .FirstOrDefaultAsync(t => t.Id == request.TournamentId);
+            //// Depricated yet!!!!. Добавяме отбора към турнира, ако още не е
+            //var tournament = await _context.Tournaments
+            //    //.Include(t => t.Teams)
+            //    .FirstOrDefaultAsync(t => t.Id == request.TournamentId);
 
-        ////    if (tournament != null && !tournament.Teams.Any(t => t.Id == request.TeamId))
-        ////    {
-        ////        var team = await _context.Teams.FindAsync(request.TeamId);
-        ////        if (team != null)
-        ////        {
-        ////            tournament.Teams.Add(team);
-        ////        }
-        ////    }
+            //if (tournament != null)
+            //{
+            //    var team = await _context.Teams.FindAsync(request.TeamId);
+            //    if (team != null)
+            //    {
+            //        tournament.Teams.Add(team);
+            //    }
+            //}
 
-        ////    // Записваме промените
-        ////    await _context.SaveChangesAsync();
+            // Записваме промените
+            await _context.SaveChangesAsync();
 
-        ////    // ✅ Проверка за точно 4 отбора, свързани с турнира
-        ////    if (tournament.Teams.Count == 4 || tournament.Teams.Count % 2 == 0)
-        ////    {
-        ////        TempData["Message"] = $"Можеш да генерираш график с {tournament.Teams.Count} отбора. Логвай се като админ и от падащо меню инициирай генерирането.";
-        ////    }
-        ////    var message = $"✅ Номера на вносната бележка за превод по IBAN: BG00XXXX00000000000000 е приета.\nДобре дошъл и успешно представяне!";
-        ////    TempData["Message"] = message;
+            // ✅ Проверка за точно 4 отбора, свързани с турнира
 
-        ////    return RedirectToAction("Index", "Home");
+            var numberApprovedTeams = this._context.ManagerRequests
+                .Count(r => r.IsApproved);
 
-        ////    //// Изпращаме SMS
-        ////    //await _smsSender.SendSmsAsync("+359885773102", $"✅ Отборът {request.Team.Name} е включен в турнира {tournament.Name}.");
+            if (numberApprovedTeams >= 4 && numberApprovedTeams % 2 == 0)
+            {
+                TempData["Message"] = $"Можеш да генерираш график с {numberApprovedTeams} отбора. Логвай се като админ и от падащо меню инициирай генерирането.";
+            }
+            var message = $"✅ Номера на вносната бележка за превод по IBAN No: {receiptNumber} е приета.\nДобре дошъл и успешно представяне!";
+            TempData["VerifyCode"] = message;
 
-        //}
+            return RedirectToAction("Index", "Home");
+
+            //// Изпращаме SMS
+            //await _smsSender.SendSmsAsync("+359885773102", $"✅ Отборът {request.Team.Name} е включен в турнира {tournament.Name}.");
+
+        }
 
         //[HttpGet]
         //public IActionResult TestSms()

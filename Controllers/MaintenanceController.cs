@@ -1,5 +1,6 @@
 ﻿namespace Tournament.Controllers
 {
+    using global::Tournament.Data;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;

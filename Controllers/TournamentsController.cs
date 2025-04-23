@@ -21,7 +21,9 @@
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Index()
         {
+            var matches = this._context.Matches.Any();
             var tournaments = await _context.Tournaments.ToListAsync();
+            TempData["data"] = !matches ? "You can set items!" : "Attension! Tournament on progress";
             return View(tournaments);
         }
 
@@ -85,11 +87,11 @@
 
             var existingTournamentId = _context
                 .Tournaments
-                .Where(t => t.IsActive==true)
-                .Select(t=>t.Id)
+                .Where(t => t.IsActive == true)
+                .Select(t => t.Id)
                 .FirstOrDefault();
 
-            if (existingTournamentId>0)
+            if (existingTournamentId > 0)
             {
                 tournamentId = (int)existingTournamentId;
             }
@@ -110,7 +112,7 @@
                 return View("ConfirmScheduleOverwrite", existingMatches);
             }
 
-            return RedirectToAction(nameof(GenerateSchedule), new { tournamentId });
+            return  RedirectToAction(nameof(GenerateSchedule), new { tournamentId });
         }
 
         [HttpPost]
@@ -132,8 +134,8 @@
                 TempData["Message"] = "❌ Турнирът не беше намерен.";
                 return RedirectToAction("Index", "Home");
             }
-            
-            var pending=await _context.ManagerRequests.CountAsync();
+
+            var pending = await _context.ManagerRequests.CountAsync();
 
             var requests = await _context.ManagerRequests
                 .Include(r => r.Team)
@@ -145,9 +147,14 @@
                 TempData["Message"] = "❌ Трябват 4 или повече четно число отбори с платена такса и одобрение!";
                 return RedirectToAction("Index", "Home");
             }
-            else if (requests.Count ==0 && pending>= 4)
+            else if (requests.Count == 0 && pending >= 4)
             {
                 TempData["Message"] = $"❌ Имате {pending} отборa с ne платена такса и одобрение!";
+                return RedirectToAction("Index", "Home");
+            }
+            if (requests.Count % 2 != 0)
+            {
+                TempData["Message"] = $"❌ Имате {requests.Count} отборa, те са нечетен брой. Изберете четен брой отбори преди да генерирате график на турнира.";
                 return RedirectToAction("Index", "Home");
             }
 
