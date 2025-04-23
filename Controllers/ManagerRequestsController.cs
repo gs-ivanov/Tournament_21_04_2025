@@ -50,7 +50,7 @@
                 return NotFound();
 
             request.Status = RequestStatus.Approved;
-            //request.Team.FeePaid = true;
+            request.Team.FeePaid = true;
             request.FeePaid = true;
             request.IsApproved=true;
 

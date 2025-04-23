@@ -38,6 +38,7 @@
                     .Where(m => m.TournamentId == activeTournament.Id && m.ScoreA != null && m.ScoreB != null)
                     .ToListAsync();
 
+                    //.Where(m => m.TournamentId == activeTournament.Id && m.ScoreA != null && m.ScoreB != null)
                 var teams = await _context.Teams
                     .Where(t => t.FeePaid==true)
                     .ToListAsync();
