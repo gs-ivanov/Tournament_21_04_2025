@@ -18,94 +18,81 @@
         {
             this._context = _context;
         }
-
-        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Test Commit git sekond try
-            var activeTournament = await _context.Tournaments
-                .FirstOrDefaultAsync(t => t.IsActive);
+            var activeTournament = await _context.Tournaments.FirstOrDefaultAsync(t => t.IsActive);
 
-            var isMatches = await _context.Matches
-                .Where(m => m.Id > 0)
-                .FirstOrDefaultAsync();
-
-            if (isMatches != null && activeTournament != null)
+            if (activeTournament != null)
             {
                 var matches = await _context.Matches
                     .Include(m => m.TeamA)
                     .Include(m => m.TeamB)
-                    .Where(m => m.TournamentId == activeTournament.Id && m.ScoreA != null && m.ScoreB != null)
+                    .Where(m => m.TournamentId == activeTournament.Id)
                     .ToListAsync();
 
-                    //.Where(m => m.TournamentId == activeTournament.Id && m.ScoreA != null && m.ScoreB != null)
-                var teams = await _context.Teams
-                    .Where(t => t.FeePaid==true)
-                    .ToListAsync();
-
-                var rankings = teams.Select(team =>
+                if (matches.Any()) // 👈 Важно: има график, дори без резултати
                 {
-                    var played = matches
-                        .Where(m => m.TeamAId == team.Id || m.TeamBId == team.Id)
-                        .ToList();
+                    var teams = await _context.Teams.ToListAsync();
 
-                    int wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0;
-
-                    foreach (var m in played)
+                    var rankings = teams.Select(team =>
                     {
-                        int scored = m.TeamAId == team.Id ? m.ScoreA ?? 0 : m.ScoreB ?? 0;
-                        int conceded = m.TeamAId == team.Id ? m.ScoreB ?? 0 : m.ScoreA ?? 0;
+                        var played = matches
+                            .Where(m => m.TeamAId == team.Id || m.TeamBId == team.Id)
+                            .Where(m => m.ScoreA != null && m.ScoreB != null)
+                            .ToList();
 
-                        goalsFor += scored;
-                        goalsAgainst += conceded;
+                        int wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0;
 
-                        if (scored > conceded) wins++;
-                        else if (scored == conceded) draws++;
-                        else losses++;
-                    }
+                        foreach (var m in played)
+                        {
+                            int scored = m.TeamAId == team.Id ? m.ScoreA ?? 0 : m.ScoreB ?? 0;
+                            int conceded = m.TeamAId == team.Id ? m.ScoreB ?? 0 : m.ScoreA ?? 0;
 
-                    return new TeamRankingViewModel
-                    {
-                        TeamName = team.Name,
-                        MatchesPlayed = played.Count,
-                        Wins = wins,
-                        Draws = draws,
-                        Losses = losses,
-                        GoalsFor = goalsFor,
-                        GoalsAgainst = goalsAgainst,
-                        LogoUrl = team.LogoUrl
-                    };
-                })
-                .OrderByDescending(r => r.Points)
-                .ThenByDescending(r => r.GoalDifference)
-                .ToList();
+                            goalsFor += scored;
+                            goalsAgainst += conceded;
 
-                return View(rankings);
-            }
-            else
-            {
-                var pendingRequest = this._context
-                    .ManagerRequests
-                    .Where(m => m.IsApproved == false)
-                    .Count();
+                            if (scored > conceded) wins++;
+                            else if (scored == conceded) draws++;
+                            else losses++;
+                        }
 
-                var approvedRequest = this._context
-                    .ManagerRequests
-                    .Where(m => m.IsApproved == true)
-                    .Count();
+                        return new TeamRankingViewModel
+                        {
+                            TeamName = team.Name,
+                            MatchesPlayed = played.Count,
+                            Wins = wins,
+                            Draws = draws,
+                            Losses = losses,
+                            GoalsFor = goalsFor,
+                            GoalsAgainst = goalsAgainst,
+                            LogoUrl = team.LogoUrl
+                        };
+                    })
+                    .OrderByDescending(r => r.Points)
+                    .ThenByDescending(r => r.GoalDifference)
+                    .ToList();
 
-                if (approvedRequest >= 4 && approvedRequest%2!=0)
-                {
-                    TempData["Message"] = $"Има {approvedRequest} одобрени заявки. Сега е момента за Администратора да одобри четно число одобрени заявки и да генерира график на турнира.";
-                }else if (pendingRequest > 0 && pendingRequest < 4)
-                {
-                    TempData["Message"] = $"Има {approvedRequest} одобрена/и и {pendingRequest} неодобрена/и заявки, при необходими най малко 4 одобрени за организиране на турнир. Готовност за организиране на турнир";
-                }
-                else if (approvedRequest >= 4)
-                {
-                    TempData["Message"] = $"Има {approvedRequest} одобрена/и и {pendingRequest} неодобрена/и заявка/и. Сега е момента за Администратора да генерира график на турнира, а за неодобрените кандидати да потвърдят платената такса.";
+                    return View(rankings);
                 }
             }
+
+            //// 👉 Няма график или няма активен турнир
+            //TempData["NonDisplay"] = "Yes";
+
+            //if (!User.Identity.IsAuthenticated)
+            //{
+            //    TempData["ShowWelcome"] = true;
+            //    return RedirectToPage("/Account/Login", new { area = "Identity" });
+            //}
+
+            //if (User.IsInRole("Administrator"))
+            //{
+            //    TempData["Message"] = "Добре дошли, Администратор! Все още няма активен турнир.";
+            //}
+            //else
+            //{
+            //    TempData["Message"] = "В момента няма активен турнир. Моля, върнете се по-късно.";
+            //}
 
             return View();
         }
@@ -115,7 +102,6 @@
             TempData["Message"] = "OOOOOOOO Waiting Admin to take his duty, please!";
             return RedirectToAction("Step2", "Setup");
         }
-
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

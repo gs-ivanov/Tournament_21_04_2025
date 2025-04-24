@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using System.Threading.Tasks;
 
     [AllowAnonymous]
@@ -88,21 +89,26 @@
                 var roles = await userManager.GetRolesAsync(user);
 
                 // 🔁 Пренасочване на администратор при липса на активен турнир
+
                 if (roles.Contains("Administrator"))
                 {
                     var activeTournament = await context.Tournaments
                         .FirstOrDefaultAsync(t => t.IsActive);
-                    if (activeTournament == null)
+
+                    var tournamentUsedForMatches = await context.Matches
+                        .Select(m => m.TournamentId)
+                        .Distinct()
+                        .FirstOrDefaultAsync();
+
+                    if (activeTournament == null || activeTournament.Id != tournamentUsedForMatches)
                     {
-                        TempData["Message"] = "Здравей, Администраторе!\nВсе още няма избран тип турнир.\nСега е момента та избереш типа на новия турнир";
-                        return RedirectToAction("Step1", "Setup");
+                        TempData["Message"] = $"Здравей, Администраторе!\nВсе още няма активен турнир или той не съвпада с турнира, използван за графика (активен: {activeTournament?.Id}, график: {tournamentUsedForMatches}).";
+                        return RedirectToAction("Index", "Home");
                     }
-                    TempData["Message"] = "OOOOOOOOOOOЗдравей, Администраторе!\nВсе още няма избран тип турнир.\nСега е момента та избереш типа на новия турнир";
+
+                    TempData["Message"] = $"Здравей, Администраторе!\nТекущ турнир: {activeTournament.Name} ({activeTournament.Type})";
                     return RedirectToAction("Index", "Home");
                 }
-
-
-
                 // Проверка: ако не е Editor или Administrator
                 var isManagerLike = !roles.Contains("Editor") && !roles.Contains("Administrator");
 

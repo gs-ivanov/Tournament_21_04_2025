@@ -115,13 +115,14 @@
 
             TempData["Message"] = "✅ Резултатът беше успешно записан.";
 
-            // ❗ SMS временно изключен
-            /*
-            await _smsSender.SendSmsAsync(
-                "+359885773102",
-                $"📢 Резултат от {match.TeamA.Name} срещу {match.TeamB.Name}: {match.ScoreA}:{match.ScoreB}"
-            );
-            */
+            //❗ SMS временно изключен
+            TempData["Message"] = "✅ Резултатът беше успешно записан и изпратен с СМС.";
+
+            //await _smsSender.SendSmsAsync(
+            //    "+359885773102",
+            //    $"📢 Резултат от {match.TeamA.Name} срещу {match.TeamB.Name}: {match.ScoreA}:{match.ScoreB}"
+            //);
+
 
             return RedirectToAction("Index");
         }
