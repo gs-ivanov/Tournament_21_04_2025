@@ -25,6 +25,8 @@ namespace Tournament.Controllers
         [HttpGet]
         public IActionResult Step1()
         {
+            TempData["Message"] = "⚠️ Графикът на турнира ще бъде изтрит!";
+
             return View();
         }
 
@@ -36,54 +38,26 @@ namespace Tournament.Controllers
             _context.Matches.RemoveRange(matches);
 
             var tournaments = await _context.Tournaments.ToListAsync();
-            foreach (var t in tournaments)
-            {
-                t.IsActive = false;
-                t.IsOpenForApplications = false;
-            }
 
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "⚠️ Системата беше успешно занулена.";
+            TempData["Message"] = "⚠️ Системата беше успешно занулена. Графикът беше изтрит";
             return RedirectToAction("Step2");
         }
         [HttpGet]
         public IActionResult Step2()
         {
-            return View();
+            var tType=_context
+                .Tournaments
+                .Where(t=>t.IsActive)
+                .ToList();
+
+            return View(tType);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Step2(TournamentType selectedType, string name, DateTime startDate)
         {
-            var all = await _context.Tournaments.ToListAsync();
-            foreach (var t in all)
-            {
-                t.IsActive = false;
-                t.IsOpenForApplications = false;
-            }
-
-            var tournament = await _context.Tournaments
-                .FirstOrDefaultAsync(t => t.Type == selectedType);
-
-            if (tournament == null)
-            {
-                tournament = new Tournament
-                {
-                    Type = selectedType
-                };
-                _context.Tournaments.Add(tournament);
-            }
-
-            tournament.Name = name;
-            tournament.StartDate = startDate;
-            tournament.IsActive = true;
-            tournament.IsOpenForApplications = true;
-
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = $"✅ Турнирът \"{name}\" беше активиран.";
+            TempData["Message"] = $"✅ Турнирът \"{selectedType}\" e активиран.";
             return RedirectToAction("Step3");
         }
 
@@ -131,7 +105,7 @@ namespace Tournament.Controllers
         public async Task<IActionResult> GenerateSchedule()
         {
             var tournament = await _context.Tournaments.FirstOrDefaultAsync(t => t.IsActive);
-            if (tournament == null)
+            if (tournament== null)
                 return RedirectToAction("Step2");
 
             var requests = await _context.ManagerRequests
@@ -211,7 +185,5 @@ namespace Tournament.Controllers
 
             return rounds;
         }
-
-
     }
 }

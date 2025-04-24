@@ -7,8 +7,8 @@
 <h2>Стъпка 3: Мениджърски регистрации</h2>
 
 <div class="alert alert-info">
-    <p>Турнирът е отворен за регистрации. Изчакайте 4 отбора да бъдат одобрени за участие.</p>
-    <p>✅ Одобрени до момента: <strong>@approved</strong> / 4</p>
+    <p>Турнирът е отворен за регистрации. Необходими са най-малко 4 отбора да бъдат одобрени за участие.</p>
+    <p>✅ Одобрени до момента: <strong>@approved</strong> </p>
 </div>
 
 @*<button type="submit" class="btn btn-success" @(ready ? "" : "disabled")>*@
@@ -23,10 +23,10 @@
 }
 else
 {
-    TempData["Step3"] = "9999";
+    TempData["Step3"] = "Регистрирай още отбори.";
     <form method="get" asp-action="Index" asp-controller="Home">
         <button type="submit" class="btn btn-success">
-            Продължи към добавяне на още заявки, като се регистрираш като Мениджар
+            Продължи към добавяне на още заявки, като се регистрираш като Мениджър
         </button>
         <a asp-action="Step2" class="btn btn-secondary ms-2">Назад</a>
     </form>

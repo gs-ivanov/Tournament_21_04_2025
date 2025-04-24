@@ -1,30 +1,18 @@
 @using Tournament.Data.Models;
 @using Tournament.Models
-@model Tournament
+@model  List<Tournament>
 
-@{ ViewData["Title"] = "Стъпка 2: Избор и редакция на турнир"; }
-
-<h2>Стъпка 2: Избор на тип и редакция на турнир</h2>
+ <h2>Стъпка 2: Данни за турнира, който ще се генерира.</h2>
 
 <form asp-action="Step2" method="post">
     <div class="mb-3">
-        <label class="form-label">Тип на турнира</label>
-        <select name="selectedType" class="form-select" required>
-            <option value="">-- Избери тип --</option>
-            @foreach (var type in Enum.GetValues(typeof(TournamentType)))
-            {
-                <option value="@type">@type</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Име на турнира</label>
-        <input type="text" name="name" class="form-control" required />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Начална дата</label>
-        <input type="date" name="startDate" class="form-control" required />
+        <label class="form-label">Тип на съществуващия турнир:  @Model[0].Type</label>
+        </br>
+        <label class="form-label">Име:  @Model[0].Name</label>
+        </br>
+        <label class="form-label">Начална дата:  @Model[0].StartDate</label>
+        </br>
+        <label class="form-label">За промяна - избери от менюто [Admin menu->Tournaments Edit/List]</label>
     </div>
 
     <button type="submit" class="btn btn-success">Запази и продължи</button>
