@@ -159,13 +159,6 @@ namespace Tournament.Controllers
                 .ToListAsync();
             if (existingMatches.Any())
             {
-                TempData["ConfirmMessage"] = "Ще изтриеш всички мачове за този турнир. Сигурен ли си?";
-                TempData["ConfirmAction"] = "ConfirmDeleteSchedule";
-                TempData["ConfirmController"] = "Tournaments";
-
-                return RedirectToAction("Confirm", "Shared");
-
-
                 _context.Matches.RemoveRange(existingMatches);
             }
 
@@ -177,18 +170,6 @@ namespace Tournament.Controllers
             //return RedirectToAction("Index", "Home");
             return RedirectToAction("Index", "Matches");
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> ConfirmDeleteSchedule()
-        //{
-        //    var matches = await _context.Matches.Where(m => m.TournamentId == ...).ToListAsync();
-        //    _context.Matches.RemoveRange(matches);
-        //    await _context.SaveChangesAsync();
-
-        //    TempData["Message"] = "Графикът беше изтрит успешно.";
-        //    return RedirectToAction("Index");
-        //}
-
 
         private List<List<(Team Home, Team Away)>> GenerateRoundRobin(List<Team> teams, bool reverse = false)
         {
