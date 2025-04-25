@@ -8,14 +8,17 @@
     using System.Threading.Tasks;
     using Tournament.Data;
     using Tournament.Data.Models;
+    using Tournament.Services.MatchScheduler;
 
     public class TournamentsController : Controller
     {
         private readonly TurnirDbContext _context;
+        private readonly IMatchSchedulerService _matchScheduler;
 
-        public TournamentsController(TurnirDbContext context)
+        public TournamentsController(IMatchSchedulerService matchScheduler, TurnirDbContext context)
         {
             _context = context;
+            _matchScheduler = matchScheduler;
         }
 
         [Authorize(Roles = "Administrator")]
@@ -112,7 +115,7 @@
                 return View("ConfirmScheduleOverwrite", existingMatches);
             }
 
-            return  RedirectToAction(nameof(GenerateSchedule), new { tournamentId });
+            return RedirectToAction(nameof(GenerateSchedule), new { tournamentId });
         }
 
         [HttpPost]
@@ -122,75 +125,58 @@
             return await GenerateSchedule(id);
         }
 
-        [HttpGet]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GenerateSchedule(int tournamentId)
         {
             var tournament = await _context.Tournaments
                 .FirstOrDefaultAsync(t => t.Id == tournamentId);
 
-            if (tournament == null)
+            if (tournament == null || !tournament.IsActive)
             {
-                TempData["Message"] = "❌ Турнирът не беше намерен.";
-                return RedirectToAction("Index", "Home");
+                TempData["Message"] = "Няма активен турнир или той е невалиден.";
+                return RedirectToAction("Index");
             }
-
-            var pending = await _context.ManagerRequests.CountAsync();
-
-            var requests = await _context.ManagerRequests
-                .Include(r => r.Team)
-                .Where(r => r.IsApproved && r.FeePaid && r.TournamentId == tournamentId)
+            var teamIds = await _context.ManagerRequests
+                .Where(r => r.TournamentId == tournament.Id && r.IsApproved && r.FeePaid)
+                .Select(r => r.TeamId)
                 .ToListAsync();
 
-            if (requests.Count < 4)
+            var approvedTeams = await _context.Teams
+                .Where(t => teamIds.Contains(t.Id))
+                .ToListAsync();
+
+            //var approvedTeams = await _context.ManagerRequests
+            //    .Include(r => r.Team)
+            //    .Where(r => r.TournamentId == tournament.Id && r.IsApproved && r.FeePaid)
+            //    .Select(r => r.Team)
+            //    .ToListAsync();
+
+            if (approvedTeams.Count < 4)
             {
-                TempData["Message"] = "❌ Трябват 4 или повече четно число отбори с платена такса и одобрение!";
-                return RedirectToAction("Index", "Home");
+                TempData["Message"] = "Не са налични достатъчно отбори за генериране на график.";
+                return RedirectToAction("Index");
             }
-            else if (requests.Count == 0 && pending >= 4)
+
+            // 🔴 Изтриваме съществуващи мачове за турнира
+            var existingMatches = await _context.Matches
+                .Where(m => m.TournamentId == tournamentId)
+                .ToListAsync();
+
+            if (!existingMatches.Any())
             {
-                TempData["Message"] = $"❌ Имате {pending} отборa с ne платена такса и одобрение!";
-                return RedirectToAction("Index", "Home");
-            }
-            if (requests.Count % 2 != 0)
-            {
-                TempData["Message"] = $"❌ Имате {requests.Count} отборa, те са нечетен брой. Изберете четен брой отбори преди да генерирате график на турнира.";
-                return RedirectToAction("Index", "Home");
+                _context.Matches.RemoveRange(existingMatches);
+
+                await _context.SaveChangesAsync();
             }
 
-            var teams = requests.Select(r => r.Team).ToList();
-            var rng = new System.Random();
-            teams = teams.OrderBy(t => rng.Next()).ToList();
-
-            var oldMatches = _context.Matches
-                .Where(m => m.TournamentId == tournamentId);
-            _context.Matches.RemoveRange(oldMatches);
-
-            var matches = new List<Match>();
-            var firstLeg = GenerateRoundRobin(teams);
-            var secondLeg = GenerateRoundRobin(teams, reverseHomeAway: true);
-            var allRounds = firstLeg.Concat(secondLeg).ToList();
-
-            for (int round = 0; round < allRounds.Count; round++)
-            {
-                var matchDate = tournament.StartDate.AddDays(7 * round);
-
-                foreach (var (home, away) in allRounds[round])
-                {
-                    matches.Add(new Match
-                    {
-                        TeamAId = home.Id,
-                        TeamBId = away.Id,
-                        TournamentId = tournamentId,
-                        PlayedOn = matchDate.Date
-                    });
-                }
-            }
+            // 🟢 Ето тук идва новият ред:
+            var matches = _matchScheduler.GenerateSchedule(approvedTeams, tournament);
 
             _context.Matches.AddRange(matches);
+
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = $"✅ Двоен график беше генериран ({matches.Count} мача).";
+            TempData["Message"] = "Графикът беше успешно генериран.";
             return RedirectToAction("Index", "Matches");
         }
 

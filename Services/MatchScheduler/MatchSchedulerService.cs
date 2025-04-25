@@ -1,52 +1,25 @@
 ﻿namespace Tournament.Services.MatchScheduler
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Tournament.Data;
+    using System;
+    using Tournament.Models;
     using Tournament.Data.Models;
 
-    public class MatchSchedulerService: IMatchSchedulerService
+    public class MatchSchedulerService : IMatchSchedulerService
     {
-        private readonly TurnirDbContext _context;
-
-        public MatchSchedulerService(TurnirDbContext context)
+        public List<Match> GenerateSchedule(List<Team> teams, Tournament tournament)
         {
-            _context = context;
-        }
-
-        public async Task<int> GenerateScheduleAsync(DateTime startDate)
-        {
-            var teams = _context.Teams.ToList();
-            var matches = new List<Match>();
-
-            if (teams.Count < 2)
-                return 0;
-
-            int matchIntervalDays = 1;
-            int round = 0;
-
-            // Round-robin алгоритъм
-            for (int i = 0; i < teams.Count - 1; i++)
+            IMatchGenerator generator = tournament.Type switch
             {
-                for (int j = i + 1; j < teams.Count; j++)
-                {
-                    matches.Add(new Match
-                    {
-                        TeamAId = teams[i].Id,
-                        TeamBId = teams[j].Id,
-                        PlayedOn = startDate.AddDays(round * matchIntervalDays),
-                    });
-                    round++;
-                }
-            }
+                TournamentType.RoundRobin => new RoundRobinScheduler(),
+                TournamentType.Knockout => new KnockoutScheduler(),
+                // Можеш да добавиш и други тук:
+                // TournamentType.Swiss => new SwissScheduler(),
+                _ => throw new NotSupportedException("Типът турнир не се поддържа.")
+            };
 
-            await _context.Matches.AddRangeAsync(matches);
-            await _context.SaveChangesAsync();
-
-            return matches.Count;
+            return generator.Generate(teams, tournament);
         }
-    }
 
+    }
 }

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Help_Info\MatchingModels.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Areas\Identity\Pages\Account\Login.cshtml" />
     <None Include="Areas\Identity\Pages\Account\Register.cshtml" />
     <None Include="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
@@ -27,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Help_Info\" />
     <Folder Include="Models\Home\" />
   </ItemGroup>
 

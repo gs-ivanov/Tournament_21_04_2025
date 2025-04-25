@@ -6,7 +6,15 @@
 {
     <div class="alert alert-info">@TempData["Message"]</div>
 }
-
+@if (User.IsInRole("Administrator"))
+{
+    <a class="btn btn-danger mt-3"
+       asp-controller="Tournaments"
+       asp-action="GenerateSchedule"
+       asp-route-tournamentId="1">
+        Генерирай Knockout график за турнир №1
+    </a>
+}
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -21,34 +29,44 @@
     <tbody>
         @foreach (var t in Model)
         {
-            <tr>
-                <td>@t.Name</td>
-                <td>@t.Type</td>
-                <td>@t.StartDate.ToString("dd.MM.yyyy")</td>
-                <td>
-                    @if (t.IsActive)
-                    {
-                        <span class="badge bg-success">Активен</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">–</span>
-                    }
-                </td>
-                <td>
-                    @if (t.IsOpenForApplications)
-                    {
-                        <span class="badge bg-primary">🟢 Отворен</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">🔒 Затворен</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-primary btn-sm">Редактирай</a>
-                </td>
-            </tr>
+        <tr>
+            <td>@t.Name</td>
+            <td>@t.Type</td>
+            <td>@t.StartDate.ToString("dd.MM.yyyy")</td>
+            <td>
+                @if (t.IsActive)
+                {
+                    <span class="badge bg-success">Активен</span>
+                }
+                else
+                {
+                    <span class="text-muted">–</span>
+                }
+            </td>
+            <td>
+                @if (t.IsOpenForApplications)
+                {
+                    <span class="badge bg-primary">🟢 Отворен</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">🔒 Затворен</span>
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-primary btn-sm">Редактирай</a>
+            </td>
+            <td>
+                @if (User.IsInRole("Administrator") && @t.IsActive)
+                {
+                    <a asp-action="GenerateSchedule"
+                        asp-route-tournamentId="@t.Id"
+                        class="btn btn-outline-danger btn-sm">
+                        Генерирай график
+                    </a>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

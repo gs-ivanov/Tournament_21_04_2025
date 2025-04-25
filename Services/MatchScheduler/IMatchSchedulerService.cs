@@ -1,10 +1,10 @@
 ﻿namespace Tournament.Services.MatchScheduler
 {
-    using System;
-    using System.Threading.Tasks;
+    using Tournament.Data.Models;
+    using System.Collections.Generic;
 
     public interface IMatchSchedulerService
     {
-        public Task<int> GenerateScheduleAsync(DateTime startDate);
+        List<Match> GenerateSchedule(List<Team> teams, Tournament tournament);
     }
 }

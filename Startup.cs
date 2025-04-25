@@ -14,10 +14,10 @@ namespace Tournament
     using Tournament.Data.Models;
     using Tournament.Infrastructure;
     using Tournament.Models;
-    using Tournament.Services.MatchResultNotifire;
     using Tournament.Services.MatchScheduler;
     using Tournament.Services.PDF;
     using Tournament.Services.SignInManager;
+    using Tournament.Services.SmsSender;
 
     public class Startup
     {
@@ -71,13 +71,13 @@ namespace Tournament
             //services
             //    .AddTransient<IRankingService, RankingService>();
             services
+                .AddTransient<IMatchGenerator, KnockoutScheduler>();
+            services
                 .AddTransient<IMatchSchedulerService, MatchSchedulerService>();
             //services
-            //    .AddTransient<IMatchResultNotifierService, MatchResultNotifierService>();
-            //services
             //    .AddTransient<IEmailSender, EmailSender>();
-            //services
-            //    .AddTransient<ISmsSender, TwilioSmsSender>();
+            services
+                .AddTransient<ISmsSender, TwilioSmsSender>();
             services
                 .AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services

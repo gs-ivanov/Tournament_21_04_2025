@@ -11,9 +11,7 @@
     using Tournament.Data;
     using Tournament.Data.Models;
     using Tournament.Models.Matches;
-    //using Tournament.Services.MatchResultNotifire;
     using Tournament.Services.MatchScheduler;
-
 
     public class MatchesController : Controller
     {
@@ -134,33 +132,33 @@
         {
             //if ((String)TempData["NonDisplay"] != "Yes")
             //{
-                var now = DateTime.Now;
+            var now = DateTime.Now;
 
-                var matches = await _context.Matches
-                    .Include(m => m.TeamA)
-                    .Include(m => m.TeamB)
-                    .OrderBy(m => m.PlayedOn)
-                    .ToListAsync();
+            var matches = await _context.Matches
+                .Include(m => m.TeamA)
+                .Include(m => m.TeamB)
+                .OrderBy(m => m.PlayedOn)
+                .ToListAsync();
 
-                // 🔁 Обновяване на отложени
-                foreach (var match in matches)
+            // 🔁 Обновяване на отложени
+            foreach (var match in matches)
+            {
+                if (match.PlayedOn < now && match.ScoreA == null && match.ScoreB == null)
                 {
-                    if (match.PlayedOn < now && match.ScoreA == null && match.ScoreB == null)
-                    {
-                        match.IsPostponed = true;
-                    }
+                    match.IsPostponed = true;
                 }
+            }
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             var tourType = this._context
                 .Tournaments
-                .Where(t=>t.IsActive==true)
+                .Where(t => t.IsActive == true)
                 .Select(t => t.Name)
                 .FirstOrDefault();
 
             ViewData["TournamentType"] = tourType;
-                return View(matches);
+            return View(matches);
             //}
             //else
             //{
@@ -405,7 +403,7 @@
             return rounds;
         }
 
-  
+
     }
 
 }

@@ -121,7 +121,14 @@ namespace Tournament.Controllers
 
             // Изчистваме предишни мачове
             var oldMatches = _context.Matches.Where(m => m.TournamentId == tournament.Id);
-            _context.Matches.RemoveRange(oldMatches);
+            
+            if (oldMatches.Any())
+            {
+                _context.Matches.RemoveRange(oldMatches);
+                await _context.SaveChangesAsync();
+
+            }
+
 
             var teams = requests.Select(r => r.Team).ToList();
             var rng = new Random();
@@ -146,12 +153,42 @@ namespace Tournament.Controllers
                 }
             }
 
+            // 🔴 Изтриваме съществуващи мачове за турнира
+            var existingMatches = await _context.Matches
+                .Where(m => m.TournamentId == tournament.Id)
+                .ToListAsync();
+            if (existingMatches.Any())
+            {
+                TempData["ConfirmMessage"] = "Ще изтриеш всички мачове за този турнир. Сигурен ли си?";
+                TempData["ConfirmAction"] = "ConfirmDeleteSchedule";
+                TempData["ConfirmController"] = "Tournaments";
+
+                return RedirectToAction("Confirm", "Shared");
+
+
+                _context.Matches.RemoveRange(existingMatches);
+            }
+
             _context.Matches.AddRange(matches);
             await _context.SaveChangesAsync();
 
             TempData["Message"] = $"✅ Генерирани {matches.Count} мача.";
+
+            //return RedirectToAction("Index", "Home");
             return RedirectToAction("Index", "Matches");
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> ConfirmDeleteSchedule()
+        //{
+        //    var matches = await _context.Matches.Where(m => m.TournamentId == ...).ToListAsync();
+        //    _context.Matches.RemoveRange(matches);
+        //    await _context.SaveChangesAsync();
+
+        //    TempData["Message"] = "Графикът беше изтрит успешно.";
+        //    return RedirectToAction("Index");
+        //}
+
 
         private List<List<(Team Home, Team Away)>> GenerateRoundRobin(List<Team> teams, bool reverse = false)
         {
