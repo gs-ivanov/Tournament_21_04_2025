@@ -26,5 +26,8 @@
 
         public DateTime? PlayedOn { get; set; }
         public bool IsPostponed { get; set; } = false;
+
+        public bool IsFinal { get; set; } = false;
+
     }
 }

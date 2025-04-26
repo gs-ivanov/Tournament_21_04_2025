@@ -1,6 +1,15 @@
 ﻿@model IEnumerable<Match>
 @using static Tournament.WebConstants;
 
+@if (User.IsInRole("Administrator"))
+{
+    <a class="btn btn-outline-primary mb-3"
+       asp-action="GenerateFinal"
+       asp-route-tournamentId="@Model.FirstOrDefault()?.TournamentId">
+        Генерирай Финал
+    </a>
+}
+
 <h2>График на мачовете през сезон: @ViewData["TournamentType"]</h2>
 
 <h5 class="text-black-10 text-center table-warning"> @TempData[GlobalMessageKey]</h5>
@@ -41,6 +50,14 @@
                     @if (User.IsInRole("Editor") && match.ScoreA==null&& match.ScoreB ==null)
                     {
                         <a asp-action="Edit" asp-route-id="@match.Id" class="btn btn-warning btn-sm">Редактирай</a>
+                    }
+                    @if (match.IsFinal)
+                    {
+                        <span class="badge bg-success">Финал</span>
+                    }
+                    else
+                    {
+                        <span>Полуфинал</span>
                     }
                 </td>
             </tr>

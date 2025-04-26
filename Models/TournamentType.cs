@@ -6,18 +6,18 @@
     public enum TournamentType
     {
         [Display(Name = "Елиминации")]
-        Knockout,
+        Knockout=1,
 
         [Display(Name = "Двойна елиминация")]
-        DoubleElimination,
+        DoubleElimination=2,
 
         [Display(Name = "Всеки срещу всеки")]
-        RoundRobin,
+        RoundRobin=3,
 
         [Display(Name = "Групи + елиминации")]
-        GroupAndKnockout,
+        GroupAndKnockout=4,
 
         [Display(Name = "Швейцарска система")]
-        Swiss
+        Swiss=5
     }
 }

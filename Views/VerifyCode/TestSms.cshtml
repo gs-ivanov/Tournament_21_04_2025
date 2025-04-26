@@ -1,4 +1,25 @@
-﻿@{
+﻿@model List<int>
+@{
+    ViewData["Title"] = "Set Tournament TYPE";
+}
+@TempData["ToolsReset"]
+
+<h2>🔧 Set Tournament TYPE</h2>
+
+<form asp-action="TestSms" method="post">
+    <div class="form-group mb-2">
+        <label >Tournament Type</label>
+        <input asp-for="@Model[0]" class="form-control" />
+        <span asp-validation-for="@Model[0]" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-warning">🔁 Set New Type:</button>
+</form>
+
+
+
+
+@* @{
     ViewData["Title"] = "Test SMS";
 }
 
@@ -6,3 +27,4 @@
 
 <p><strong>Message SID:</strong> @ViewBag.MessageSid</p>
 <p><strong>Status:</strong> @ViewBag.Status</p>
+ *@

@@ -1,3 +1,16 @@
+    public enum TournamentType
+    Id              Name                        Type        Type int
+        [Display(Name = "Елиминации")]        Knockout,         0
+
+        [Display(Name = "Двойна елиминация")] DoubleElimination  1
+
+        [Display(Name = "Всеки срещу всеки")] RoundRobin          2
+
+        [Display(Name = "Групи + елиминации")]GroupAndKnockout    3
+
+        [Display(Name = "Швейцарска система")]  Swiss               4
+
+
 В бранч GenuineCode: Кода преди прилагане на новият вариант. Имплементирани са Администратор, Едитор, ИсАдмин и ИсЕдитор
 Името на базата данни е сменено на Tournament_Genuine, за да може да се стартира.
 То до:

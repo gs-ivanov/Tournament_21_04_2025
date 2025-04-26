@@ -75,11 +75,30 @@
                     t.IsActive = false;
                     t.IsOpenForApplications = false;
                 }
+                var othersTeams = await _context.Teams
+                    .Where(t => t.FeePaid == true)
+                    .ToListAsync();
+
+                foreach (var t in othersTeams)
+                {
+                    t.TournamentId = updated.Id;
+                }
+
+                var managerReqs=_context.ManagerRequests
+                    .Where(m=>m.IsApproved && m.FeePaid)
+                    .ToList();
+
+                foreach (var m in managerReqs)
+                {
+                    m.TournamentId = updated.Id;
+                    m.TournamentType= updated.Type;
+                }
+
             }
 
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "✅ Турнирът беше успешно обновен.";
+            TempData["Message"] = $"✅ Турнирът {updated.Name} беше успешно обновен.";
             return RedirectToAction("Index");
         }
 
@@ -128,6 +147,17 @@
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GenerateSchedule(int tournamentId)
         {
+            //TEST FIELD ***********************************
+            // 🟢 Ето тук идва новият ред:
+            //////////var approvedTeamsA = await _context.Teams.ToListAsync();
+            //////////var tournamentA = await _context.Tournaments
+            //////////    .FirstOrDefaultAsync(t => t.Id == tournamentId);
+
+
+            //////////var matchesA = _matchScheduler.GenerateSchedule(approvedTeamsA, tournamentA);
+
+//************************************
+
             var tournament = await _context.Tournaments
                 .FirstOrDefaultAsync(t => t.Id == tournamentId);
 
@@ -144,12 +174,6 @@
             var approvedTeams = await _context.Teams
                 .Where(t => teamIds.Contains(t.Id))
                 .ToListAsync();
-
-            //var approvedTeams = await _context.ManagerRequests
-            //    .Include(r => r.Team)
-            //    .Where(r => r.TournamentId == tournament.Id && r.IsApproved && r.FeePaid)
-            //    .Select(r => r.Team)
-            //    .ToListAsync();
 
             if (approvedTeams.Count < 4)
             {

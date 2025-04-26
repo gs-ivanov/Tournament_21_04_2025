@@ -32,7 +32,10 @@
 
                 if (matches.Any()) // 👈 Важно: има график, дори без резултати
                 {
-                    var teams = await _context.Teams.ToListAsync();
+                    var teams = await _context
+                        .Teams
+                        .Where(t=>t.FeePaid==true)
+                        .ToListAsync();
 
                     var rankings = teams.Select(team =>
                     {
@@ -101,6 +104,11 @@
         {
             TempData["Message"] = "OOOOOOOO Waiting Admin to take his duty, please!";
             return RedirectToAction("Step2", "Setup");
+        }
+        public IActionResult HtmlCertificate()
+        {
+            TempData["Message"] = "Future PDF Certificate";
+            return View();
         }
         public IActionResult Error()
         {

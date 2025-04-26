@@ -4,7 +4,10 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Tournament.Data;
@@ -131,6 +134,19 @@
 
         }
 
+        [HttpGet]
+        public IActionResult TestSms()
+        {
+            List<int> a = new List<int> { 1 };
+            return View(a);
+        }
+
+        [HttpPost]
+        public IActionResult TestSms(IEnumerable<int> a)
+        {
+            var x = a.First();
+            return Ok(x);
+        }
         //[HttpGet]
         //public IActionResult TestSms()
         //{

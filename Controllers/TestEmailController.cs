@@ -8,15 +8,21 @@
 
         public async Task<IActionResult> Send()
         {
-            var to = "gs.ivanov50@gmail.com"; // замени с твоя адрес
-            var subject = "⚽ Тестване на Email от Tournament";
-            var body = "Това е тестово известие от приложението Tournament.\nУспешно сме свързали Gmail SMTP.";
 
-            //await _emailSender.SendAsync(to, subject, body);
+            return RedirectToAction("Index", "Home");
+            //var to = "gs.ivanov50@gmail.com"; // замени с твоя адрес
+            //var subject = "⚽ Тестване на Email от Tournament";
+            //var body = "Това е тестово известие от приложението Tournament.\nУспешно сме свързали Gmail SMTP.";
 
-            return Content("✅ Изпратено успешно!");
+            ////await _emailSender.SendAsync(to, subject, body);
+
+            //return Content("✅ Изпратено успешно!");
         }
 
-        public IActionResult Test() => View();
+        public IActionResult Test()
+        {
+           return View();
+        
+        }
     }
 }

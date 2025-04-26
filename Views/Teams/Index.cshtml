@@ -8,7 +8,7 @@
 
 @if (User.Identity.IsAuthenticated && User.IsInRole("Editor"))
 {
-    <a asp-action="Create" class="btn btn-success mb-3">➕ Добави отбор</a>
+    <a asp-action="HtmlCertificate" class="btn btn-success mb-3 d-print-block">➕ Show PDF Certificate</a>
 }
 
 @if (TempData["Message"] != null)

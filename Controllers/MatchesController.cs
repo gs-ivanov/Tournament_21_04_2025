@@ -29,6 +29,56 @@
             //this._notifier = notifier;
         }
 
+        // Final
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> GenerateFinal(int tournamentId)
+        {
+            var matches = await _context.Matches
+                .Where(m => m.TournamentId == tournamentId)
+                .OrderBy(m => m.PlayedOn)
+                .ToListAsync();
+
+            if (matches.Count < 2)
+            {
+                TempData["Message"] = "Не са налични достатъчно полуфинали за създаване на финал.";
+                return RedirectToAction("Index");
+            }
+
+            var semi1 = matches[0];
+            var semi2 = matches[1];
+
+            // Проверка дали и двата полуфинала имат резултат
+            if (semi1.ScoreA == null || semi1.ScoreB == null || semi2.ScoreA == null || semi2.ScoreB == null)
+            {
+                TempData["Message"] = "Трябва първо да бъдат въведени резултатите от полуфиналите.";
+                return RedirectToAction("Index");
+            }
+
+            // Определяме победителите
+            var winner1Id = semi1.ScoreA > semi1.ScoreB ? semi1.TeamAId : semi1.TeamBId;
+            var winner2Id = semi2.ScoreA > semi2.ScoreB ? semi2.TeamAId : semi2.TeamBId;
+
+            // Намираме максималната дата от съществуващите полуфинали
+            var maxPlayedOn = matches.Max(m => m.PlayedOn) ?? DateTime.Now;
+
+            // Създаваме финален мач
+            var finalMatch = new Match
+            {
+                TeamAId = winner1Id,
+                TeamBId = winner2Id,
+                TournamentId = tournamentId,
+                PlayedOn = maxPlayedOn.AddDays(7),
+                IsFinal = true // 🏆 Маркираме го като финал
+            };
+
+            _context.Matches.Add(finalMatch);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "✅ Финалът беше успешно създаден!";
+            return RedirectToAction("Index");
+        }
+        //*************
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {

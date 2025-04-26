@@ -13,8 +13,9 @@
             {
                 TournamentType.RoundRobin => new RoundRobinScheduler(),
                 TournamentType.Knockout => new KnockoutScheduler(),
-                // Можеш да добавиш и други тук:
-                // TournamentType.Swiss => new SwissScheduler(),
+                TournamentType.DoubleElimination => new DoubleEliminationScheduler(),
+                TournamentType.GroupAndKnockout => new GroupAndKnockoutScheduler(),
+                TournamentType.Swiss => new SwissScheduler(),
                 _ => throw new NotSupportedException("Типът турнир не се поддържа.")
             };
 

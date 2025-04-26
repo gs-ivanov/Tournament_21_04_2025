@@ -6,15 +6,6 @@
 {
     <div class="alert alert-info">@TempData["Message"]</div>
 }
-@if (User.IsInRole("Administrator"))
-{
-    <a class="btn btn-danger mt-3"
-       asp-controller="Tournaments"
-       asp-action="GenerateSchedule"
-       asp-route-tournamentId="1">
-        Генерирай Knockout график за турнир №1
-    </a>
-}
 <table class="table table-bordered">
     <thead>
         <tr>

@@ -62,7 +62,7 @@
             if (!TempData.ContainsKey("VerifiedManagerId"))
             {
                 TempData["Error"] = "Нямате достъп до създаване на отбор. Въведете код за достъп.";
-                return RedirectToAction("EnterCode", "VerifyCode");
+                //return RedirectToAction("EnterCode", "VerifyCode");
             }
 
             TempData.Keep("VerifiedManagerId"); // запазваме за POST
@@ -74,48 +74,50 @@
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateTeamViewModel model)
         {
-            if (!TempData.ContainsKey("VerifiedManagerId"))
-            {
-                TempData["Error"] = "Нямате достъп до създаване на отбор.";
-                return RedirectToAction("EnterCode", "VerifyCode");
-            }
+            //if (!TempData.ContainsKey("VerifiedManagerId"))
+            //{
+            //    TempData["Error"] = "Нямате достъп до създаване на отбор.";
+            //    return RedirectToAction("EnterCode", "VerifyCode");
+            //}
 
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var userId = TempData["VerifiedManagerId"].ToString();
+            //var userId = TempData["VerifiedManagerId"].ToString();
 
-            var team = new Team
-            {
-                Name = model.Name,
-                CoachName = model.CoachName,
-                LogoUrl = model.LogoUrl,
-                FeePaid = true,
-                UserId = userId
-            };
+            //var team = new Team
+            //{
+            //    Name = model.Name,
+            //    CoachName = model.CoachName,
+            //    LogoUrl = model.LogoUrl,
+            //    FeePaid = true,
+            //    UserId = userId
+            //};
 
-            _context.Teams.Add(team);
-            await _context.SaveChangesAsync();
+            //_context.Teams.Add(team);
+            //await _context.SaveChangesAsync();
 
             // Актуализираме заявката
-            var request = await _context.ManagerRequests.FirstOrDefaultAsync(r => r.UserId == userId);
-            if (request != null)
-            {
-                request.TeamId = team.Id;
-                await _context.SaveChangesAsync();
-            }
+            //var request = await _context.ManagerRequests.FirstOrDefaultAsync(r => r.UserId == userId);
+            //if (request != null)
+            //{
+            //    request.TeamId = team.Id;
+            //    await _context.SaveChangesAsync();
+            //}
 
             // PDF сертификат
+            var teamName = "Cherno More";
+            var TournamentType = "RoundRobin";
             var certificateId = Guid.NewGuid().ToString().Substring(0, 8);
             var html = $@"
                     <html>
                     <head><style>body {{ font-family: Arial; padding: 40px; }}</style></head>
                     <body>
                         <h1>СЕРТИФИКАТ ЗА УЧАСТИЕ</h1>
-                        <p>Отбор: <strong>{team.Name}</strong></p>
-                        <p>Тип турнир: <strong>{request?.TournamentType}</strong></p>
+                        <p>Отбор: <strong>{teamName}</strong></p>
+                        <p>Тип турнир: <strong>{TournamentType}</strong></p>
                         <p>Дата: {DateTime.Now:dd.MM.yyyy}</p>
                         <p>Сертификат №: <strong>{certificateId}</strong></p>
                     </body>

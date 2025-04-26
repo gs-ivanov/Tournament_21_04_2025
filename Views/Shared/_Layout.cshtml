@@ -69,6 +69,12 @@
         </nav>
     </header>
 
+    @if (TempData["Register"] != null)
+    {
+        <div class="alert alert-success">@TempData["Register"]</div>
+        <span class="d-none">@TempData["Register"]=null</span>
+    }
+
     @if (TempData["VeriftCode"] != null)
     {
         <div class="alert alert-success">@TempData["VeriftCode"]</div>

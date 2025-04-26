@@ -128,7 +128,7 @@
                 }
 
                 var tournament = await context.Tournaments
-                    .Where(t => t.Type == TournamentType.RoundRobin && t.IsOpenForApplications)
+                    .Where(t => t.IsOpenForApplications)
                     .OrderBy(t => t.StartDate)
                     .FirstOrDefaultAsync();
 
@@ -139,6 +139,8 @@
                 }
 
                 team.UserId = user.Id;
+                team.Tournament = tournament;
+                team.TournamentId = tournament.Id;
 
                 var request = new ManagerRequest
                 {
@@ -159,7 +161,7 @@
                 //var phone = user.PhoneNumber ?? "+359885773102";
                 //await smsSender.SendSmsAsync(phone, smsText);
                 //TempData["Message"] = $"Изпратен СМС на телефонен нномер {phone}.";
-                TempData["Message"] = "✅ Регистрацията е завършена. Направете банков превод на сметката на Федерацията по футбол IBAN :XXXXXXXXXXXX и с номера на разписката потвърдете плащането, като изберете меню <Платена такса-участие>:.";
+                TempData["Register"] = "✅ Регистрацията е завършена. Направете банков превод на сметката на Федерацията по футбол IBAN :XXXXXXXXXXXX и с номера на разписката потвърдете плащането, като изберете меню <Платена такса-участие>:.";
                 return RedirectToAction("Index", "Home");
             }
             else

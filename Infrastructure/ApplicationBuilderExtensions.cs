@@ -25,7 +25,7 @@
 
             MigrateDatabase(services);
             SeedDefaultTeams(context);
-            SeedDefaultTournament(context);
+            SeedTournamentsAsync(context);
 
             SeedRolesAndAdministrator(services);
             //SeedRolesAndAdministrator(services);
@@ -132,22 +132,62 @@
             context.SaveChanges();
         }
 
-        private static void SeedDefaultTournament(TurnirDbContext context)
+        public static void SeedTournamentsAsync(TurnirDbContext context)
         {
-            if (context.Tournaments.Any())
-                return;
-
-            var tournamentData = new List<Tournament>
+            if (!context.Tournaments.Any())
             {
-                new Tournament { Name = "Пролетен турнир", Type = TournamentType.Knockout, StartDate = new DateTime(2025, 5, 10), IsOpenForApplications = false, IsActive = false },
-                new Tournament { Name = "Летен шампионат", Type = TournamentType.DoubleElimination, StartDate = new DateTime(2025, 7, 1), IsOpenForApplications = false, IsActive = false },
-                new Tournament { Name = "Зимна купа", Type = TournamentType.RoundRobin, StartDate = new DateTime(2025, 12, 5), IsOpenForApplications = true, IsActive = true },
-                new Tournament { Name = "Есенна купа", Type = TournamentType.GroupAndKnockout, StartDate = new DateTime(2025, 9, 5), IsOpenForApplications = false, IsActive = false },
-                new Tournament { Name = "Шведска купа", Type = TournamentType.Swiss, StartDate = new DateTime(2025, 11, 5), IsOpenForApplications = false, IsActive = false }
-            };
+                var tournaments = new List<Tournament>
+                {
+                    new Tournament
+                    {
+                        Name = "Елиминации",
+                        Type = TournamentType.Knockout, // 1
+                        TypeName = TournamentType.Knockout.ToString(),
+                        StartDate = new DateTime(2025, 7, 1),
+                        IsActive = false,
+                        IsOpenForApplications = false
+                    },
+                    new Tournament
+                    {
+                        Name = "Двойна елиминация",
+                        Type = TournamentType.DoubleElimination, // 2
+                        TypeName = TournamentType.DoubleElimination.ToString(),
+                        StartDate = new DateTime(2025, 10, 1),
+                        IsActive = false,
+                        IsOpenForApplications = false
+                    },
+                    new Tournament
+                    {
+                        Name = "Всеки срещу всеки 2025",
+                        Type = TournamentType.RoundRobin, // 3
+                        TypeName = TournamentType.RoundRobin.ToString(),
+                        StartDate = new DateTime(2025, 6, 1),
+                        IsActive = true,
+                        IsOpenForApplications = true
+                    },
+                    new Tournament
+                    {
+                        Name = "Групи + елиминации",
+                        Type = TournamentType.GroupAndKnockout, // 4
+                        TypeName = TournamentType.GroupAndKnockout.ToString(),
+                        StartDate = new DateTime(2025, 9, 1),
+                        IsActive = false,
+                        IsOpenForApplications = false
+                    },
+                    new Tournament
+                    {
+                        Name = "Швейцарска система",
+                        Type = TournamentType.Swiss, // 5
+                        TypeName = TournamentType.Swiss.ToString(),
+                        StartDate = new DateTime(2025, 8, 1),
+                        IsActive = false,
+                        IsOpenForApplications = false
+                    }
+                };
 
-            context.Tournaments.AddRange(tournamentData);
-            context.SaveChanges();
+                context.Tournaments.AddRange(tournaments);
+                context.SaveChangesAsync();
+            }
         }
     }
 }

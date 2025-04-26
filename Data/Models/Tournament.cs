@@ -17,6 +17,10 @@
         [Display(Name = "Тип турнир")]
         public TournamentType Type { get; set; }
 
+        [Required]
+        [Display(Name = "Име на турнир")]
+        public string TypeName { get; set; }
+
         [Display(Name = "Начална дата")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
