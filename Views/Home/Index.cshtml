@@ -1,8 +1,19 @@
 ﻿@model IEnumerable<TeamRankingViewModel>
 
+@{
+    var name = "";
+
+    foreach (var item in Model)
+    {
+        if (name != "") continue;
+        name = item.TournamentName;
+    }
+}
+
+
 @if (Model!=null)
 {
-    <h3 class="mt-4 text-center">Класиране</h3>
+    <h3 class="mt-4 text-center">Класиране  @name</h3>
    <table class="table table-hover table-bordered text-center">
         <thead class="table-primary">
             <tr>

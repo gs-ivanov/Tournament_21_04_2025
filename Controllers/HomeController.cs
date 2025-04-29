@@ -37,6 +37,11 @@
                         .Where(t=>t.FeePaid==true)
                         .ToListAsync();
 
+                    var tournamentName = _context.Tournaments
+                        .Where(t => t.IsActive == true)
+                        .Select(t => t.Name)
+                        .FirstOrDefault();
+
                     var rankings = teams.Select(team =>
                     {
                         var played = matches
@@ -68,7 +73,8 @@
                             Losses = losses,
                             GoalsFor = goalsFor,
                             GoalsAgainst = goalsAgainst,
-                            LogoUrl = team.LogoUrl
+                            LogoUrl = team.LogoUrl,
+                            TournamentName = tournamentName
                         };
                     })
                     .OrderByDescending(r => r.Points)

@@ -20,16 +20,16 @@
                 </button>
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+@*                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="VerifyCode" asp-action="CheckTwilioConfig">Check Twilio Config</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="VerifyCode" asp-action="TestSms">Test Sms</a>
                         </li>
-                        <li class="nav-item">
+ *@                        <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Matches" asp-action="Index">График на мачовете</a>
                         </li>
-                        <li class="nav-item">
+@*                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Teams" asp-action="Index">Списък с отборите</a>
                         </li>
                         <li class="nav-item">
@@ -41,7 +41,7 @@
                         @if (User.IsInRole("Editor") && User.Identity.Name.ToLower() != "editor@tur.com")
                         {
                         }
-                        @if (User.IsInRole("Administrator"))
+ *@                        @if (User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-warning" asp-controller="ManagerRequests" asp-action="Index">Преглед и редактиране заявките за участие в турнир</a>

@@ -3,6 +3,7 @@
     public class TeamRankingViewModel
     {
         public string TeamName { get; set; }
+        public string TournamentName { get; set; }
 
         public int MatchesPlayed { get; set; }
         public int Wins { get; set; }

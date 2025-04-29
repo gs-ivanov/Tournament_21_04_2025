@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -147,62 +148,105 @@
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> GenerateSchedule(int tournamentId)
         {
-            //TEST FIELD ***********************************
-            // 🟢 Ето тук идва новият ред:
-            //////////var approvedTeamsA = await _context.Teams.ToListAsync();
-            //////////var tournamentA = await _context.Tournaments
-            //////////    .FirstOrDefaultAsync(t => t.Id == tournamentId);
+            var tournament = await _context.Tournaments.FirstOrDefaultAsync(t => t.Id == tournamentId);
 
-
-            //////////var matchesA = _matchScheduler.GenerateSchedule(approvedTeamsA, tournamentA);
-
-//************************************
-
-            var tournament = await _context.Tournaments
-                .FirstOrDefaultAsync(t => t.Id == tournamentId);
-
-            if (tournament == null || !tournament.IsActive)
+            if (tournament == null)
             {
-                TempData["Message"] = "Няма активен турнир или той е невалиден.";
+                TempData["Message"] = "Турнирът не съществува.";
                 return RedirectToAction("Index");
             }
-            var teamIds = await _context.ManagerRequests
-                .Where(r => r.TournamentId == tournament.Id && r.IsApproved && r.FeePaid)
+
+            // 🔴 Изтриваме всички стари мачове за този турнир
+            var existingMatches = await _context.Matches
+                .Where(m => m.Id>0)
+                //.Where(m => m.TournamentId == tournamentId)
+                .ToListAsync();
+
+            _context.Matches.RemoveRange(existingMatches);
+            await _context.SaveChangesAsync();
+
+            // 🟢 Зареждаме одобрените отбори
+            var approvedTeams = await _context.ManagerRequests
+                .Where(r => r.TournamentId == tournamentId && r.IsApproved && r.FeePaid)
                 .Select(r => r.TeamId)
                 .ToListAsync();
 
-            var approvedTeams = await _context.Teams
-                .Where(t => teamIds.Contains(t.Id))
+            var teams = await _context.Teams
+                .Where(t => approvedTeams.Contains(t.Id))
                 .ToListAsync();
 
-            if (approvedTeams.Count < 4)
+            if (teams.Count < 2)
             {
-                TempData["Message"] = "Не са налични достатъчно отбори за генериране на график.";
+                TempData["Message"] = "Няма достатъчно отбори за създаване на график.";
                 return RedirectToAction("Index");
             }
 
-            // 🔴 Изтриваме съществуващи мачове за турнира
-            var existingMatches = await _context.Matches
-                .Where(m => m.TournamentId == tournamentId)
-                .ToListAsync();
-
-            if (!existingMatches.Any())
-            {
-                _context.Matches.RemoveRange(existingMatches);
-
-                await _context.SaveChangesAsync();
-            }
-
-            // 🟢 Ето тук идва новият ред:
-            var matches = _matchScheduler.GenerateSchedule(approvedTeams, tournament);
+            // 🟢 Генерираме нов график чрез MatchScheduler
+            var matches = _matchScheduler.GenerateSchedule(teams, tournament);
 
             _context.Matches.AddRange(matches);
-
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Графикът беше успешно генериран.";
+            TempData["Message"] = "✅ Новият график беше успешно генериран.";
             return RedirectToAction("Index", "Matches");
         }
+
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> GenerateFinal(int tournamentId)
+        {
+            var matches = await _context.Matches
+                .Where(m => m.TournamentId == tournamentId)
+                .OrderBy(m => m.PlayedOn)
+                .ToListAsync();
+
+            if (matches.Count < 2)
+            {
+                TempData["Message"] = "Не са налични достатъчно полуфинали за създаване на финал.";
+                return RedirectToAction("Index");
+            }
+
+            // 🔎 Проверка дали вече има финал
+            if (matches.Any(m => m.IsFinal))
+            {
+                TempData["Message"] = "⚠️ Финалът вече съществува.";
+                return RedirectToAction("Index");
+            }
+
+            var semi1 = matches[0];
+            var semi2 = matches[1];
+
+            // Проверка дали има въведени резултати
+            if (semi1.ScoreA == null || semi1.ScoreB == null || semi2.ScoreA == null || semi2.ScoreB == null)
+            {
+                TempData["Message"] = "Трябва първо да бъдат въведени резултатите от полуфиналите.";
+                return RedirectToAction("Index");
+            }
+
+            // Определяме победителите
+            var winner1Id = semi1.ScoreA > semi1.ScoreB ? semi1.TeamAId : semi1.TeamBId;
+            var winner2Id = semi2.ScoreA > semi2.ScoreB ? semi2.TeamAId : semi2.TeamBId;
+
+            // Най-късната дата
+            var maxPlayedOn = matches.Max(m => m.PlayedOn) ?? DateTime.Now;
+
+            // Създаваме финалния мач
+            var finalMatch = new Match
+            {
+                TeamAId = winner1Id,
+                TeamBId = winner2Id,
+                TournamentId = tournamentId,
+                PlayedOn = maxPlayedOn.AddDays(7),
+                IsFinal = true
+            };
+
+            _context.Matches.Add(finalMatch);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "✅ Финалът беше успешно създаден!";
+            return RedirectToAction("Index");
+        }
+
+
 
         private List<List<(Team Home, Team Away)>> GenerateRoundRobin(List<Team> teams, bool reverseHomeAway = false)
         {
