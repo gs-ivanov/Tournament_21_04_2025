@@ -29,9 +29,7 @@
  *@                        <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Matches" asp-action="Index">График на мачовете</a>
                         </li>
-@*                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Teams" asp-action="Index">Списък с отборите</a>
-                        </li>
+@*                         
                         <li class="nav-item">
                             <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Стани Мениджър</a>
                         </li>
@@ -43,23 +41,27 @@
                         }
  *@                        @if (User.IsInRole("Administrator"))
                         {
-                            <li class="nav-item">
+@*                             <li class="nav-item">
                                 <a class="nav-link text-warning" asp-controller="ManagerRequests" asp-action="Index">Преглед и редактиране заявките за участие в турнир</a>
                             </li>
-                            <li class="nav-item dropdown">
+ *@                            <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-warning" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Админ меню
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                     <li><a class="dropdown-item" asp-controller="SetUp" asp-action="Step1">Setup Wizarf - Ресет и генериране на нов график</a></li>
                                     <li><a class="dropdown-item" asp-controller="Tournaments">Tournaments Edit/List</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Teams" asp-action="CreateMultiple">Създаване на списък с отбори</a></li>
+                                    <li><a class="dropdown-item" asp-controller="ManagerRequests" asp-action="Index">Преглед и редактиране заявките за участие в турнир</a></li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Tools" asp-action="Index">🛠️ Админ инструменти</a>
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Tools" asp-action="Index">????? 🛠️ Админ инструменти</a>
                                     </li>
-                                    <li><a class="dropdown-item" asp-controller="AdminController" asp-action="ResetTeamsAndRequests">Reset Teams and ManagerRequests items: FeePaid, Status, IsApproved and FeePaid</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Teams" asp-action="Index">Списък с отборите</a>
+                                    </li>
+
+@*                                     <li><a class="dropdown-item" asp-controller="AdminController" asp-action="ResetTeamsAndRequests">Reset Teams and ManagerRequests items: FeePaid, Status, IsApproved and FeePaid</a></li>
                                     <li><a class="dropdown-item" asp-controller="Matches" asp-action="Index">Spare</a></li>
-                                </ul>
+ *@                                </ul>
                             </li>
                         }
                     </ul>

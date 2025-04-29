@@ -161,7 +161,7 @@
                 //var phone = user.PhoneNumber ?? "+359885773102";
                 //await smsSender.SendSmsAsync(phone, smsText);
                 //TempData["Message"] = $"Изпратен СМС на телефонен нномер {phone}.";
-                TempData["Register"] = "✅ Регистрацията е завършена. Направете банков превод на сметката на Федерацията по футбол IBAN :XXXXXXXXXXXX и с номера на разписката потвърдете плащането, като изберете меню <Платена такса-участие>:.";
+                TempData["Register"] = "✅ Регистрацията е завършена. Направете банков превод на сметката на Федерацията по футбол IBAN :XXXXXXXXXXXX , влезте в профила си и въведете номера на вносната бележка.";
                 return RedirectToAction("Index", "Home");
             }
             else

@@ -83,6 +83,11 @@
 
                     return View(rankings);
                 }
+                else
+                {
+                    TempData["Message"] = "Все още няма регистрирани участници!";
+                    return RedirectToAction(nameof(HtmlCertificate));
+                }
             }
 
             //// 👉 Няма график или няма активен турнир
@@ -113,7 +118,7 @@
         }
         public IActionResult HtmlCertificate()
         {
-            TempData["Message"] = "Future PDF Certificate";
+            TempData["Message_UUUUUUUU"] = "Future PDF Certificate";
             return View();
         }
         public IActionResult Error()
